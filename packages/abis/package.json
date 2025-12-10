@@ -1,0 +1,53 @@
+{
+    "name": "@hst/abis",
+    "version": "0.0.1",
+    "private": true,
+    "type": "module",
+    "main": "./src/index.ts",
+    "module": "./src/index.ts",
+    "types": "./src/index.ts",
+    "exports": {
+        ".": {
+            "import": "./src/index.ts",
+            "types": "./src/index.ts"
+        },
+        "./erc20": {
+            "import": "./src/erc20.ts",
+            "types": "./src/erc20.ts"
+        },
+        "./erc721": {
+            "import": "./src/erc721.ts",
+            "types": "./src/erc721.ts"
+        },
+        "./erc1155": {
+            "import": "./src/erc1155.ts",
+            "types": "./src/erc1155.ts"
+        },
+        "./multicall3": {
+            "import": "./src/multicall3.ts",
+            "types": "./src/multicall3.ts"
+        },
+        "./addresses": {
+            "import": "./src/addresses.ts",
+            "types": "./src/addresses.ts"
+        },
+        "./tip20": {
+            "import": "./src/tip20.ts",
+            "types": "./src/tip20.ts"
+        }
+    },
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc --watch",
+        "typecheck": "tsc --noEmit",
+        "clean": "rimraf dist"
+    },
+    "dependencies": {
+        "viem": "^2.21.49"
+    },
+    "devDependencies": {
+        "@hst/config": "workspace:*",
+        "rimraf": "^6.0.1",
+        "typescript": "^5.7.2"
+    }
+}

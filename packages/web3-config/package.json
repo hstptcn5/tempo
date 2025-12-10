@@ -1,0 +1,43 @@
+{
+    "name": "@hst/web3-config",
+    "version": "0.0.1",
+    "private": true,
+    "type": "module",
+    "main": "./src/index.ts",
+    "module": "./src/index.ts",
+    "types": "./src/index.ts",
+    "exports": {
+        ".": {
+            "import": "./src/index.ts",
+            "types": "./src/index.ts"
+        },
+        "./chains": {
+            "import": "./src/chains.ts",
+            "types": "./src/chains.ts"
+        },
+        "./wagmi": {
+            "import": "./src/wagmi.ts",
+            "types": "./src/wagmi.ts"
+        }
+    },
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc --watch",
+        "typecheck": "tsc --noEmit",
+        "clean": "rimraf dist"
+    },
+    "dependencies": {
+        "@rainbow-me/rainbowkit": "^2.2.1",
+        "@tanstack/react-query": "^5.62.3",
+        "viem": "^2.21.49",
+        "wagmi": "^2.14.1"
+    },
+    "devDependencies": {
+        "@hst/config": "workspace:*",
+        "rimraf": "^6.0.1",
+        "typescript": "^5.7.2"
+    },
+    "peerDependencies": {
+        "react": "^18.0.0"
+    }
+}

@@ -1,0 +1,30 @@
+/** @type {import('next').NextConfig} */
+const path = require('path');
+
+const nextConfig = {
+    reactStrictMode: true,
+    transpilePackages: [
+        '@hst/ui-web3',
+        '@hst/hooks-web3',
+        '@hst/web3-config',
+        '@hst/abis',
+    ],
+    webpack: (config) => {
+        config.resolve.fallback = { fs: false, net: false, tls: false };
+        config.externals.push('pino-pretty', 'lokijs', 'encoding');
+
+        // Fix: Force resolve wagmi and related packages from root node_modules
+        // This prevents duplicate module instances when using transpilePackages
+        config.resolve.alias = {
+            ...config.resolve.alias,
+            wagmi: path.resolve(__dirname, 'node_modules/wagmi'),
+            '@tanstack/react-query': path.resolve(__dirname, 'node_modules/@tanstack/react-query'),
+            viem: path.resolve(__dirname, 'node_modules/viem'),
+            '@rainbow-me/rainbowkit': path.resolve(__dirname, 'node_modules/@rainbow-me/rainbowkit'),
+        };
+
+        return config;
+    },
+};
+
+module.exports = nextConfig;

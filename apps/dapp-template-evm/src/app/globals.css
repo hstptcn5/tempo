@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import Web3 UI component styles */
+@import '@hst/ui-web3/styles.css';
+
+:root {
+    --foreground: #ffffff;
+    --background-start: #0a0a1a;
+    --background-end: #1a1a2e;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    min-height: 100vh;
+    font-family: 'Inter', system-ui, sans-serif;
+}
+
+body {
+    color: var(--foreground);
+    background: linear-gradient(180deg, var(--background-start), var(--background-end));
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Glass effect utility class */
+.glass {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Card component */
+.card {
+    @apply rounded-xl p-6 glass;
+}
+
+/* Button variants */
+.btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 font-medium transition-all duration-200;
+}
+
+.btn-primary {
+    @apply bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600 hover:shadow-lg hover:shadow-blue-500/25;
+}
+
+.btn-secondary {
+    @apply bg-white/10 text-white hover:bg-white/20;
+}
+
+.btn-ghost {
+    @apply text-white/70 hover:text-white hover:bg-white/10;
+}

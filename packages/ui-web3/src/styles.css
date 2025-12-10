@@ -1,0 +1,319 @@
+/* Web3 UI Components Styles */
+
+/* Token Input */
+.hst-token-input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  transition: border-color 0.2s;
+}
+
+.hst-token-input:focus-within {
+  border-color: rgba(59, 130, 246, 0.5);
+}
+
+.hst-token-input--error {
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+.hst-token-input__row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.hst-token-input__input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: inherit;
+}
+
+.hst-token-input__input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.hst-token-input__token-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.hst-token-input__token-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.hst-token-input__token-logo {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.hst-token-input__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.hst-token-input__max-btn {
+  padding: 0.25rem 0.5rem;
+  background: rgba(59, 130, 246, 0.2);
+  border: none;
+  border-radius: 0.375rem;
+  color: #3b82f6;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.hst-token-input__max-btn:hover {
+  background: rgba(59, 130, 246, 0.3);
+}
+
+.hst-token-input__error {
+  color: #ef4444;
+  font-size: 0.75rem;
+}
+
+/* Address Display */
+.hst-address {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.875rem;
+}
+
+.hst-address__text {
+  color: inherit;
+}
+
+.hst-address__link {
+  color: #3b82f6;
+  text-decoration: none;
+}
+
+.hst-address__link:hover {
+  text-decoration: underline;
+}
+
+.hst-address__copy {
+  padding: 0.25rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.hst-address__copy:hover {
+  opacity: 1;
+}
+
+.hst-address__copy--copied {
+  color: #22c55e;
+}
+
+/* Chain Selector */
+.hst-chain-selector {
+  position: relative;
+}
+
+.hst-chain-selector__trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.hst-chain-selector__trigger:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.hst-chain-selector__trigger--wrong {
+  border-color: rgba(239, 68, 68, 0.5);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.hst-chain-selector__icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.hst-chain-selector__name {
+  font-weight: 500;
+}
+
+.hst-chain-selector__dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: #1a1a2e;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  z-index: 50;
+}
+
+.hst-chain-selector__option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem;
+  background: transparent;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  text-align: left;
+}
+
+.hst-chain-selector__option:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.hst-chain-selector__option--active {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+/* Transaction Toasts */
+.hst-tx-toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #1a1a2e;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  max-width: 360px;
+}
+
+.hst-tx-toast__icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+}
+
+.hst-tx-toast__icon--signing {
+  color: #3b82f6;
+}
+
+.hst-tx-toast__icon--pending {
+  color: #f59e0b;
+  animation: spin 1s linear infinite;
+}
+
+.hst-tx-toast__icon--success {
+  color: #22c55e;
+}
+
+.hst-tx-toast__icon--error {
+  color: #ef4444;
+}
+
+.hst-tx-toast__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.hst-tx-toast__title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.hst-tx-toast__message {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.hst-tx-toast__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #3b82f6;
+  text-decoration: none;
+}
+
+.hst-tx-toast__link:hover {
+  text-decoration: underline;
+}
+
+/* Connect Button */
+.hst-connect-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  border: none;
+  border-radius: 0.75rem;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.hst-connect-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+}
+
+.hst-connect-btn:active {
+  transform: translateY(0);
+}
+
+.hst-connect-btn--connected {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.hst-connect-btn__address {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.875rem;
+}
+
+.hst-connect-btn__balance {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Animations */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
