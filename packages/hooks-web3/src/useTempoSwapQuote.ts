@@ -8,7 +8,7 @@
 
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { usePublicClient } from 'wagmi';
-import { type Address, formatUnits, parseUnits } from 'viem';
+import { type Address, formatUnits } from 'viem';
 import {
     tempoDexRouterAbi,
     TEMPO_DEX_ROUTER_TESTNET,
@@ -155,7 +155,7 @@ export function useTempoSwapQuote(options: UseTempoSwapQuoteOptions): UseTempoSw
 
             // Get quote from DEX router
             let amountOut: bigint;
-            
+
             try {
                 amountOut = await publicClient.readContract({
                     address: router,
@@ -168,7 +168,7 @@ export function useTempoSwapQuote(options: UseTempoSwapQuoteOptions): UseTempoSw
                 // fall back to 1:1 rate estimation for stablecoins
                 // This allows UI testing before DEX is deployed
                 console.warn('DEX quote failed, using 1:1 fallback:', quoteFetchError);
-                
+
                 // Adjust for decimal differences
                 if (tokenInDecimals === tokenOutDecimals) {
                     amountOut = amountIn;
@@ -177,7 +177,7 @@ export function useTempoSwapQuote(options: UseTempoSwapQuoteOptions): UseTempoSw
                 } else {
                     amountOut = amountIn * BigInt(10 ** (tokenOutDecimals - tokenInDecimals));
                 }
-                
+
                 // Apply a simulated fee (0.03%)
                 amountOut = amountOut - (amountOut * 3n) / 10000n;
             }

@@ -5,11 +5,11 @@ import Link from 'next/link';
 import { useAccount, useChainId } from 'wagmi';
 import { parseUnits, isAddress, type Address } from 'viem';
 import { erc20Abi, TOKENS, type TokenInfo } from '@hst/abis';
-import { TokenInput, AddressDisplay, ConnectButton, ChainSelector, TxToast, TxToastContainer, useTxToast } from '@hst/ui-web3';
-import { useTokenBalance, useTokenApproval, useContractWrite, formatBalance, type TxStatus } from '@hst/hooks-web3';
+import { TokenInput, ConnectButton, ChainSelector, TxToastContainer, useTxToast } from '@hst/ui-web3';
+import { useTokenBalance, useTokenApproval, useContractWrite } from '@hst/hooks-web3';
 
 export default function WritePage() {
-    const { isConnected, address } = useAccount();
+    const { isConnected } = useAccount();
     const chainId = useChainId();
     const { toasts, show, update, hide } = useTxToast();
 
@@ -40,7 +40,7 @@ export default function WritePage() {
     }, [amount, selectedToken]);
 
     // Token balance
-    const { balance, formatted: balanceFormatted } = useTokenBalance({
+    const { balance } = useTokenBalance({
         token: selectedToken?.address as Address,
         watch: true,
         enabled: !!selectedToken && isConnected,
@@ -65,12 +65,9 @@ export default function WritePage() {
 
     // Transfer hook
     const {
-        status: transferStatus,
-        txHash: transferHash,
         error: transferError,
         isLoading: isTransferring,
         write: transfer,
-        reset: resetTransfer,
     } = useContractWrite({
         address: selectedToken?.address as Address,
         abi: erc20Abi,
@@ -183,8 +180,8 @@ export default function WritePage() {
                                         key={token.address}
                                         onClick={() => setSelectedToken(token)}
                                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${selectedToken?.address === token.address
-                                                ? 'bg-blue-500 text-white'
-                                                : 'bg-white/10 hover:bg-white/20'
+                                            ? 'bg-blue-500 text-white'
+                                            : 'bg-white/10 hover:bg-white/20'
                                             }`}
                                     >
                                         {token.symbol}

@@ -181,7 +181,6 @@ export default function TempoIssuancePage() {
         step,
         isLoading,
         error,
-        validationErrors,
         txHash,
         result,
         createToken,

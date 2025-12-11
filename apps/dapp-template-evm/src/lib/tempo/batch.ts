@@ -12,7 +12,7 @@
 
 import { encodeFunctionData, type Address, type Hex, parseUnits } from 'viem';
 import { tip20Abi, batchTransferAbi, BATCH_TRANSFER_ADDRESSES, BATCH_TRANSFER_AVAILABLE } from '@hst/abis';
-import { encodeMemoBytes32, validateMemo, getByteLength } from '@hst/hooks-web3';
+import { encodeMemoBytes32, validateMemo } from '@hst/hooks-web3';
 
 // BatchTransfer contract - deployed on Tempo Testnet
 export const BATCH_TRANSFER_ADDRESS = BATCH_TRANSFER_ADDRESSES.TEMPO_TESTNET;
@@ -111,7 +111,7 @@ export function validateRecipient(
     decimals: number
 ): ValidatedBatchRecipient {
     const errors: string[] = [];
-    
+
     // Validate address
     let address: Address | undefined;
     if (!input.address) {
@@ -121,7 +121,7 @@ export function validateRecipient(
     } else {
         address = input.address as Address;
     }
-    
+
     // Validate amount
     let amount: bigint = 0n;
     if (!input.amount) {
@@ -136,7 +136,7 @@ export function validateRecipient(
             errors.push('Invalid amount format');
         }
     }
-    
+
     // Validate memo (if present)
     let memo: Hex | undefined;
     let hasMemo = false;
@@ -150,7 +150,7 @@ export function validateRecipient(
             hasMemo = true;
         }
     }
-    
+
     return {
         address: address || '0x0000000000000000000000000000000000000000' as Address,
         amount,
@@ -192,28 +192,28 @@ export function validateAndBuildBatch(
     options: BatchValidationOptions
 ): BatchValidationResult {
     const { tokenAddress, tokenDecimals, userBalance, strictMode = true } = options;
-    
+
     const recipients: ValidatedBatchRecipient[] = [];
     const calls: MulticallCall[] = [];
     const errors: string[] = [];
     let totalAmount = 0n;
-    
+
     // Validate each recipient
     for (let i = 0; i < inputs.length; i++) {
         const input = inputs[i];
         const validated = validateRecipient(input, tokenDecimals);
         recipients.push(validated);
-        
+
         if (validated.isValid) {
             totalAmount += validated.amount;
-            
+
             // Build call data
             const callData = buildTransferCallData(
                 validated.address,
                 validated.amount,
                 validated.memo
             );
-            
+
             calls.push({
                 target: tokenAddress,
                 allowFailure: !strictMode,
@@ -223,17 +223,17 @@ export function validateAndBuildBatch(
             errors.push(`Row ${i + 1}: ${validated.error}`);
         }
     }
-    
+
     // Check total against balance
     if (userBalance !== undefined && totalAmount > userBalance) {
         errors.push(`Total amount (${totalAmount}) exceeds balance (${userBalance})`);
     }
-    
+
     // Check for empty batch
     if (calls.length === 0) {
         errors.push('No valid recipients');
     }
-    
+
     return {
         isValid: errors.length === 0 && calls.length > 0,
         recipients,
@@ -250,17 +250,17 @@ export function validateAndBuildBatch(
 export function parseCSV(content: string): BatchRecipientInput[] {
     const lines = content.trim().split('\n');
     const results: BatchRecipientInput[] = [];
-    
+
     for (const line of lines) {
         // Skip empty lines and headers
         const trimmed = line.trim();
         if (!trimmed || trimmed.toLowerCase().startsWith('address')) continue;
-        
+
         // Handle both comma and tab delimiters
-        const parts = trimmed.includes('\t') 
+        const parts = trimmed.includes('\t')
             ? trimmed.split('\t').map(p => p.trim())
             : trimmed.split(',').map(p => p.trim());
-        
+
         if (parts.length >= 2) {
             results.push({
                 address: parts[0] || '',
@@ -269,7 +269,7 @@ export function parseCSV(content: string): BatchRecipientInput[] {
             });
         }
     }
-    
+
     return results;
 }
 
@@ -316,7 +316,7 @@ export function buildBatchTransferArrays(
     const amounts: bigint[] = [];
     const memos: Hex[] = [];
     let hasMemos = false;
-    
+
     for (const r of validatedRecipients) {
         if (r.isValid) {
             recipients.push(r.address);
@@ -325,7 +325,7 @@ export function buildBatchTransferArrays(
             if (r.hasMemo) hasMemos = true;
         }
     }
-    
+
     return { recipients, amounts, memos, hasMemos };
 }
 

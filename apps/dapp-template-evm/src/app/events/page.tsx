@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useChainId, useWatchContractEvent, useBlockNumber } from 'wagmi';
+import { useAccount, useChainId, useWatchContractEvent, useBlockNumber } from 'wagmi';
 import { isAddress, type Address, type Log } from 'viem';
 import { erc20Abi, TOKENS } from '@hst/abis';
 import { AddressDisplay, ConnectButton, ChainSelector } from '@hst/ui-web3';
@@ -18,6 +18,7 @@ interface TransferEvent {
 }
 
 export default function EventsPage() {
+    useAccount(); // Check connection status
     const chainId = useChainId();
     const { data: blockNumber } = useBlockNumber({ watch: true });
 

@@ -2,8 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { usePublicClient, useAccount, useChainId } from 'wagmi';
-import { type Address, type Hex, parseAbiItem, formatUnits } from 'viem';
-import { tip20Abi } from '@hst/abis';
+import { type Address, type Hex, parseAbiItem } from 'viem';
 
 /**
  * A payment log entry from blockchain events

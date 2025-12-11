@@ -5,7 +5,7 @@ import {
     InsufficientFundsError,
     type BaseError,
 } from 'viem';
-import { classifyComplianceError, type ComplianceError, type TIP403ErrorCode } from './tempoCompliance';
+import { classifyComplianceError, type ComplianceError } from './tempoCompliance';
 
 export interface DecodedError {
     code: string;
@@ -115,7 +115,7 @@ export function decodeError(error: unknown): DecodedError {
     // Contract revert
     if (error instanceof ContractFunctionRevertedError) {
         const reason = error.reason || error.message;
-        
+
         // Check for TIP-403 compliance errors first
         const { isCompliance, compliance } = checkComplianceError(reason);
         if (isCompliance && compliance) {
@@ -128,7 +128,7 @@ export function decodeError(error: unknown): DecodedError {
                 compliance,
             };
         }
-        
+
         const friendlyMessage = findRevertReason(reason);
 
         return {
@@ -197,7 +197,7 @@ export function decodeError(error: unknown): DecodedError {
                     compliance,
                 };
             }
-            
+
             const friendlyMessage = findRevertReason(err.message);
             return {
                 ...result,

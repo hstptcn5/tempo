@@ -25,7 +25,7 @@ import { useAccount, useChainId, useSwitchChain, useWriteContract } from 'wagmi'
 import { parseUnits, isAddress, type Address, type Hex } from 'viem';
 import { TOKENS, CHAIN_IDS, tip20Abi, type TokenInfo } from '@hst/abis';
 import { TokenInput, ConnectButton, TxToastContainer, useTxToast, MemoInputBytes32 } from '@hst/ui-web3';
-import { useTokenBalance, formatBalance, type EncodedMemo } from '@hst/hooks-web3';
+import { useTokenBalance, type EncodedMemo } from '@hst/hooks-web3';
 import { getExplorerUrl } from '@hst/web3-config';
 import { isSponsorEnabled, getTempoSponsorUrl, DEFAULT_TEMPO_SPONSOR_URL } from '@/lib/tempo';
 import { MinecraftNavbar } from '../components/MinecraftNavbar';

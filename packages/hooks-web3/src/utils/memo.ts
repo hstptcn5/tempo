@@ -1,4 +1,4 @@
-import { pad, stringToHex, toHex, type Hex } from 'viem';
+import { pad, toHex, type Hex } from 'viem';
 
 /**
  * Result of encoding a string to bytes32 memo

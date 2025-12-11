@@ -10,7 +10,7 @@
  */
 
 import { useState, useCallback } from 'react';
-import { useAccount, usePublicClient, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount, usePublicClient, useWriteContract } from 'wagmi';
 import { type Address, type Hex, maxUint256 } from 'viem';
 import {
     tempoDexRouterAbi,

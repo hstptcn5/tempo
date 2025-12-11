@@ -5,7 +5,7 @@ import { useWriteContract, useWaitForTransactionReceipt, useAccount, useChainId 
 import { type Address, type Hex } from 'viem';
 import { tip20Abi } from '@hst/abis';
 import { decodeError, type DecodedError } from './utils/errorDecoder';
-import { encodeMemoBytes32, encodeStringToMemo } from './utils/memo';
+import { encodeMemoBytes32 } from './utils/memo';
 import type { TxStatus } from './useContractWrite';
 
 // Re-export memo utilities for convenience

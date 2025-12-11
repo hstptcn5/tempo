@@ -69,7 +69,6 @@ export default function TempoPayPage() {
     const {
         status: complianceStatus,
         message: complianceMessage,
-        isChecking: isCheckingCompliance,
     } = useComplianceCheck({
         token: selectedToken?.address as Address,
         recipient: isAddress(recipientAddress) ? recipientAddress as Address : undefined,
@@ -81,8 +80,6 @@ export default function TempoPayPage() {
 
     // TIP-20 transfer with memo hook
     const {
-        status: transferStatus,
-        txHash: transferHash,
         error: transferError,
         isLoading: isTransferring,
         send,
@@ -111,7 +108,7 @@ export default function TempoPayPage() {
                 chainId: TEMPO_CHAIN_ID,
             });
         },
-        onSuccess: (hash) => {
+        onSuccess: () => {
             // Update status to success
             setLastPayment(prev => prev ? { ...prev, status: 'success' } : null);
             update('transfer', {

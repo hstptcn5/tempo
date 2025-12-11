@@ -120,7 +120,7 @@ function SwapStepIndicator({ step }: { step: SwapStep }) {
 }
 
 export default function TempoSwapPage() {
-    const { isConnected, address: userAddress } = useAccount();
+    const { isConnected } = useAccount();
     const chainId = useChainId();
     const { switchChainAsync, isPending: isSwitchingChain } = useSwitchChain();
     const { toasts, show, update, hide } = useTxToast();
@@ -190,7 +190,6 @@ export default function TempoSwapPage() {
         approvalHash,
         swapHash,
         executeSwap,
-        reset: resetSwap,
     } = useTempoSwap({
         chainId: TEMPO_CHAIN_ID,
         onApprovalSubmitted: (hash) => {
@@ -202,7 +201,7 @@ export default function TempoSwapPage() {
                 chainId: TEMPO_CHAIN_ID,
             });
         },
-        onApprovalConfirmed: (hash) => {
+        onApprovalConfirmed: () => {
             update('approval', {
                 status: 'success',
                 title: 'Approved!',
@@ -218,7 +217,7 @@ export default function TempoSwapPage() {
                 chainId: TEMPO_CHAIN_ID,
             });
         },
-        onSwapConfirmed: (hash) => {
+        onSwapConfirmed: () => {
             update('swap', {
                 status: 'success',
                 title: 'Swap Complete!',

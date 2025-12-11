@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useCallback, useEffect, type ChangeEvent } from 'react';
-import { type Hex } from 'viem';
 import { encodeMemoBytes32, validateMemo, getByteLength, type EncodedMemo } from '@hst/hooks-web3';
 
 export interface MemoInputBytes32Props {
@@ -52,7 +51,7 @@ export function MemoInputBytes32({
     // Update encoding when value changes
     useEffect(() => {
         const validation = validateMemo(value, { asciiOnly });
-        
+
         if (!validation.isValid) {
             setError(validation.error);
         } else {
@@ -67,7 +66,7 @@ export function MemoInputBytes32({
     // Handle input change
     const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value;
-        
+
         // Check byte length before allowing input
         const byteLen = getByteLength(newValue);
         if (byteLen > 32) {
@@ -91,7 +90,7 @@ export function MemoInputBytes32({
                     <span className="hst-memo-input__optional"> (optional, max 32 bytes)</span>
                 </label>
                 {showByteCounter && (
-                    <span 
+                    <span
                         className={`hst-memo-input__counter ${isOverLimit ? 'hst-memo-input__counter--error' : isNearLimit ? 'hst-memo-input__counter--warning' : ''}`}
                         style={{ color: isOverLimit ? '#ef4444' : isNearLimit ? '#f59e0b' : undefined }}
                     >
@@ -122,7 +121,7 @@ export function MemoInputBytes32({
             {showPreview && value && !error && (
                 <div className="hst-memo-input__preview">
                     <p className="hst-memo-input__preview-label">Encoded bytes32 memo:</p>
-                    <p 
+                    <p
                         className="hst-memo-input__preview-value"
                         style={{ color: accentColor }}
                     >

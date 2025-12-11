@@ -1,4 +1,5 @@
 import { createWagmiConfig, defaultChains, testnetChains, chains } from '@hst/web3-config';
+import type { Chain } from 'viem';
 
 // WalletConnect requires a project ID. For development, use the public demo ID.
 // For production, get your own at https://cloud.walletconnect.com/
@@ -13,7 +14,8 @@ if (!process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID) {
 
 // Include Tempo Testnet by default for stablecoin payment demos
 // Tempo is always enabled as it demonstrates stablecoin-first architecture
-const chainsWithTempo = [...defaultChains, chains.tempoTestnet];
+// Type assertion is needed because extended chains have extra properties
+const chainsWithTempo = [...defaultChains, chains.tempoTestnet] as unknown as readonly [Chain, ...Chain[]];
 
 export const wagmiConfig = createWagmiConfig({
     appName: 'dApp Template',

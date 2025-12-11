@@ -11,7 +11,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { usePublicClient, useAccount } from 'wagmi';
-import { type Address, encodeFunctionData } from 'viem';
+import { type Address } from 'viem';
 import { tip20Abi } from '@hst/abis';
 import {
     type ComplianceStatus,
@@ -135,10 +135,10 @@ export function useComplianceCheck(options: UseComplianceCheckOptions): UseCompl
         } catch (err) {
             // Extract error message
             const errorMessage = err instanceof Error ? err.message : String(err);
-            
+
             // Check if it's a compliance error
             const compliance = classifyComplianceError(errorMessage);
-            
+
             if (compliance.isComplianceError) {
                 const result: ComplianceCheckResult = {
                     status: 'blocked',
@@ -151,9 +151,9 @@ export function useComplianceCheck(options: UseComplianceCheckOptions): UseCompl
                 setIsChecking(false);
                 return result;
             }
-            
+
             // Check for insufficient balance (not a compliance issue)
-            if (errorMessage.toLowerCase().includes('insufficient') || 
+            if (errorMessage.toLowerCase().includes('insufficient') ||
                 errorMessage.toLowerCase().includes('exceeds balance')) {
                 const result: ComplianceCheckResult = {
                     status: 'error',
