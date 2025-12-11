@@ -1,5 +1,13 @@
 {
+    "$schema": "https://openapi.vercel.sh/vercel.json",
     "buildCommand": "pnpm turbo build --filter=dapp-template-evm --force",
-    "outputDirectory": "dist",
-    "installCommand": "pnpm install"
+    "outputDirectory": "apps/dapp-template-evm/out",
+    "installCommand": "pnpm install",
+    "framework": null,
+    "rewrites": [
+        {
+            "source": "/(.*)",
+            "destination": "/index.html"
+        }
+    ]
 }
