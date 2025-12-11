@@ -1,6 +1,1 @@
-{
-    "buildCommand": "cd apps/dapp-template-evm && rm -rf out .next && pnpm next build && cd ../.. && mkdir -p dist && cp -r apps/dapp-template-evm/out/* dist/",
-    "outputDirectory": "dist",
-    "installCommand": "pnpm install",
-    "framework": null
-}
+{}
