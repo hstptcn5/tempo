@@ -1,7 +1,6 @@
 {
-    "$schema": "https://openapi.vercel.sh/vercel.json",
-    "buildCommand": "npm install -g pnpm && pnpm install && cd apps/dapp-template-evm && rm -rf out .next && pnpm build",
-    "outputDirectory": "apps/dapp-template-evm/out",
-    "installCommand": "echo 'Skip default install'",
+    "buildCommand": "pnpm build:vercel",
+    "outputDirectory": "dist",
+    "installCommand": "pnpm install",
     "framework": null
 }

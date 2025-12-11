@@ -7,6 +7,7 @@
     "scripts": {
         "dev": "turbo dev",
         "build": "turbo build",
+        "build:vercel": "turbo build --filter=dapp-template-evm --force && cp -r apps/dapp-template-evm/out dist",
         "lint": "turbo lint",
         "typecheck": "turbo typecheck",
         "clean": "turbo clean && rimraf node_modules",
