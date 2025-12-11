@@ -1,0 +1,7 @@
+[build]
+  command = "pnpm build --filter dapp-template-evm"
+  publish = "apps/dapp-template-evm/out"
+
+[build.environment]
+  NODE_VERSION = "20"
+  PNPM_VERSION = "9.14.2"

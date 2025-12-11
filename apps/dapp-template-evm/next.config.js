@@ -3,6 +3,10 @@ const path = require('path');
 
 const nextConfig = {
     reactStrictMode: true,
+    output: 'export', // Static export for Netlify - avoids SSR issues with Web3 libs
+    images: {
+        unoptimized: true, // Required for static export
+    },
     transpilePackages: [
         '@hst/ui-web3',
         '@hst/hooks-web3',
