@@ -3,7 +3,8 @@ const path = require('path');
 
 const nextConfig = {
     reactStrictMode: true,
-    output: 'export', // Static export for Netlify - avoids SSR issues with Web3 libs
+    output: 'export', // Static export for Vercel/Netlify - avoids SSR issues with Web3 libs
+    distDir: process.env.VERCEL ? '../../dist' : '.next', // Output to root dist on Vercel
     images: {
         unoptimized: true, // Required for static export
     },

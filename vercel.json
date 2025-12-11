@@ -1,6 +1,5 @@
 {
-    "buildCommand": "pnpm turbo build --filter=dapp-template-evm",
-    "outputDirectory": "apps/dapp-template-evm/out",
-    "installCommand": "pnpm install",
-    "framework": null
+    "buildCommand": "pnpm turbo build --filter=dapp-template-evm --force",
+    "outputDirectory": "dist",
+    "installCommand": "pnpm install"
 }
