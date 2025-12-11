@@ -4,12 +4,12 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useAccount, useReadContract, useChainId } from 'wagmi';
 import { isAddress } from 'viem';
-import { erc20Abi, TOKENS, getToken } from '@hst/abis';
-import { TokenInput, AddressDisplay, ConnectButton, ChainSelector } from '@hst/ui-web3';
+import { erc20Abi, TOKENS } from '@hst/abis';
+import { AddressDisplay, ConnectButton, ChainSelector } from '@hst/ui-web3';
 import { useTokenBalance, formatBalance } from '@hst/hooks-web3';
 
 export default function ReadPage() {
-    const { isConnected, address } = useAccount();
+    const { isConnected } = useAccount();
     const chainId = useChainId();
 
     // Token address input
@@ -46,7 +46,7 @@ export default function ReadPage() {
     });
 
     // Balance using our hook
-    const { balance, formatted: balanceFormatted, isLoading: balanceLoading } = useTokenBalance({
+    const { formatted: balanceFormatted, isLoading: balanceLoading } = useTokenBalance({
         token: validTokenAddress!,
         watch: true,
         enabled: !!validTokenAddress && isConnected,
