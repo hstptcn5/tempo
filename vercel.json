@@ -1,0 +1,6 @@
+{
+    "buildCommand": "cd apps/dapp-template-evm && pnpm build",
+    "outputDirectory": "apps/dapp-template-evm/out",
+    "installCommand": "pnpm install",
+    "framework": "nextjs"
+}
