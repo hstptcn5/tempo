@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useAccount, useChainId, useWatchContractEvent, useBlockNumber } from 'wagmi';
-import { formatUnits, isAddress, type Address, type Log } from 'viem';
+import { isAddress, type Address, type Log } from 'viem';
 import { erc20Abi, TOKENS } from '@hst/abis';
 import { AddressDisplay, ConnectButton, ChainSelector } from '@hst/ui-web3';
 import { formatBalance } from '@hst/hooks-web3';
