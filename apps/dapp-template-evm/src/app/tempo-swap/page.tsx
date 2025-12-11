@@ -357,7 +357,7 @@ export default function TempoSwapPage() {
                                     value={amountIn}
                                     onChange={(e) => setAmountIn(e.target.value)}
                                     placeholder="0.00"
-                                    className="w-full px-4 py-4 bg-white border-2 border-black text-2xl font-mono focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black placeholder:text-gray-400"
+                                    className="w-full px-4 py-4 bg-white dark:bg-gray-800 border-2 border-black dark:border-white text-2xl font-mono focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
                                 />
                             </div>
                             <div className="w-40">
@@ -399,7 +399,7 @@ export default function TempoSwapPage() {
                         </div>
                         <div className="flex gap-3">
                             <div className="flex-1">
-                                <div className="w-full px-4 py-4 bg-gray-50 border-2 border-black text-2xl text-gray-900 font-mono">
+                                <div className="w-full px-4 py-4 bg-gray-50 dark:bg-gray-800 border-2 border-black dark:border-white text-2xl text-gray-900 dark:text-white font-mono">
                                     {isQuoteLoading ? (
                                         <span className="animate-pulse">Loading...</span>
                                     ) : quote ? (
@@ -423,23 +423,23 @@ export default function TempoSwapPage() {
 
                     {/* Quote Details */}
                     {quote && (
-                        <div className="mb-6 p-4 border-2 border-black bg-gray-50 space-y-2 text-sm font-mono">
+                        <div className="mb-6 p-4 border-2 border-black dark:border-white bg-gray-50 dark:bg-gray-800 space-y-2 text-sm font-mono">
                             <div className="flex justify-between">
-                                <span className="text-gray-500">Rate</span>
-                                <span className="text-gray-900">1 {tokenIn?.symbol} = {quote.rate.toFixed(4)} {tokenOut?.symbol}</span>
+                                <span className="text-gray-500 dark:text-gray-400">Rate</span>
+                                <span className="text-gray-900 dark:text-white">1 {tokenIn?.symbol} = {quote.rate.toFixed(4)} {tokenOut?.symbol}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-gray-500">Price Impact</span>
+                                <span className="text-gray-500 dark:text-gray-400">Price Impact</span>
                                 <span className={quote.priceImpact > 1 ? 'text-amber-600' : 'text-green-600'}>
                                     {quote.priceImpact.toFixed(2)}%
                                 </span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-gray-500">Min. Received</span>
-                                <span className="text-gray-900">{parseFloat(formattedMinOut).toFixed(4)} {tokenOut?.symbol}</span>
+                                <span className="text-gray-500 dark:text-gray-400">Min. Received</span>
+                                <span className="text-gray-900 dark:text-white">{parseFloat(formattedMinOut).toFixed(4)} {tokenOut?.symbol}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-gray-500">Network Fee</span>
+                                <span className="text-gray-500 dark:text-gray-400">Network Fee</span>
                                 <span className="text-green-600">Paid in {tokenIn?.symbol}</span>
                             </div>
                         </div>
@@ -448,7 +448,7 @@ export default function TempoSwapPage() {
                     {/* Slippage Settings */}
                     <div className="mb-6">
                         <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-display text-gray-600">Slippage Tolerance</span>
+                            <span className="text-sm font-display text-gray-600 dark:text-gray-300">Slippage Tolerance</span>
                         </div>
                         <div className="flex gap-2">
                             {SLIPPAGE_PRESETS.map(({ label, value }) => (
@@ -571,9 +571,9 @@ export default function TempoSwapPage() {
                 </div>
 
                 {/* Info Card */}
-                <div className="mt-6 card-block !p-4 !shadow-none bg-blue-50 !border-2">
-                    <h3 className="font-display mb-2 text-sm text-blue-800">About Tempo Stablecoin Swaps</h3>
-                    <ul className="text-gray-600 text-sm font-mono space-y-1">
+                <div className="mt-6 card-block !p-4 !shadow-none bg-blue-50 dark:bg-cyan-900/30 !border-2">
+                    <h3 className="font-display mb-2 text-sm text-blue-800 dark:text-cyan-300">About Tempo Stablecoin Swaps</h3>
+                    <ul className="text-gray-600 dark:text-gray-300 text-sm font-mono space-y-1">
                         <li>• All Tempo stablecoins maintain 1:1 USD peg</li>
                         <li>• Swaps have minimal fees (~0.03%)</li>
                         <li>• No native gas needed - fees paid in stablecoins</li>

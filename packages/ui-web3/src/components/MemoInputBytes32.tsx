@@ -144,33 +144,40 @@ export function MemoInputBytes32({
                 }
                 .hst-memo-input__label {
                     font-size: 0.875rem;
-                    color: rgba(255, 255, 255, 0.5);
+                    color: inherit;
+                    opacity: 0.7;
                 }
                 .hst-memo-input__optional {
-                    color: rgba(255, 255, 255, 0.3);
+                    opacity: 0.5;
                 }
                 .hst-memo-input__counter {
                     font-size: 0.75rem;
                     font-family: monospace;
-                    color: rgba(255, 255, 255, 0.5);
+                    opacity: 0.7;
                 }
                 .hst-memo-input__input {
                     width: 100%;
                     padding: 0.75rem 1rem;
-                    background: rgba(255, 255, 255, 0.05);
-                    border: 1px solid rgba(255, 255, 255, 0.1);
-                    border-radius: 0.5rem;
-                    font-family: monospace;
-                    font-size: 0.875rem;
-                    color: white;
+                    background: rgba(0, 0, 0, 0.1);
+                    border: 2px solid currentColor;
+                    border-radius: 0;
+                    font-family: 'VT323', monospace;
+                    font-size: 1rem;
+                    color: inherit;
                     outline: none;
                     transition: border-color 0.2s;
+                    box-shadow: 4px 4px 0 currentColor;
+                }
+                .hst-memo-input__input::placeholder {
+                    opacity: 0.4;
                 }
                 .hst-memo-input__input:focus {
                     border-color: var(--accent-color, #10b981);
+                    box-shadow: 4px 4px 0 var(--accent-color, #10b981);
                 }
                 .hst-memo-input__input--error {
                     border-color: #ef4444;
+                    box-shadow: 4px 4px 0 #ef4444;
                 }
                 .hst-memo-input__input:disabled {
                     opacity: 0.5;
@@ -184,17 +191,18 @@ export function MemoInputBytes32({
                 .hst-memo-input__preview {
                     margin-top: 0.5rem;
                     padding: 0.75rem;
-                    background: rgba(255, 255, 255, 0.05);
-                    border-radius: 0.5rem;
+                    background: rgba(0, 0, 0, 0.1);
+                    border: 2px solid currentColor;
+                    box-shadow: 4px 4px 0 currentColor;
                 }
                 .hst-memo-input__preview-label {
                     font-size: 0.75rem;
-                    color: rgba(255, 255, 255, 0.5);
+                    opacity: 0.7;
                     margin-bottom: 0.25rem;
                 }
                 .hst-memo-input__preview-value {
-                    font-family: monospace;
-                    font-size: 0.75rem;
+                    font-family: 'VT323', monospace;
+                    font-size: 0.875rem;
                     word-break: break-all;
                 }
                 .hst-memo-input__preview-warning {

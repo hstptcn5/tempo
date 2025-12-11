@@ -1,7 +1,7 @@
 # Tempo Testnet Integration - Tiến Trình
 
 **Ngày bắt đầu:** 2025-12-10  
-**Cập nhật lần cuối:** 2025-12-10 23:00
+**Cập nhật lần cuối:** 2025-12-11 21:22
 
 ---
 
@@ -140,11 +140,32 @@
 - [x] Graceful "unavailable" state when `NEXT_PUBLIC_TEMPO_SPONSOR_ENABLED=false`
 - [x] Memo bytes32 flow unchanged
 
+### 12. UI Theme - Minecraft DeFi Style
+- [x] **Tailwind preset:** Emerald green colors, Silkscreen/VT323/Space Mono fonts
+- [x] **Block shadows:** 4px offset for 3D pixel effect
+- [x] **MinecraftNavbar:** Shared component with dark mode toggle, network badge
+- [x] **Homepage rewrite:** Pixel art hero, action tiles, compliance badge
+- [x] **All Tempo pages styled:** Pay, Swap, Batch, Issuance, Sponsor
+- [x] **Dark mode persistence:** Via localStorage, synced across all pages
+
+### 13. Build Fixes & Deployment (2025-12-11)
+- [x] **Fixed 18 TypeScript errors** across 3 packages:
+  - `dapp-template-evm`: 9 files (unused imports/variables)
+  - `hooks-web3`: 8 files (incorrect type exports, unused imports)
+  - `ui-web3`: 1 file (unused import)
+- [x] **Fixed wagmi.ts chain type** - Added type assertion for chain compatibility
+- [x] **Static export config** - `output: 'export'` in `next.config.js`
+- [x] **Created `netlify.toml`** - Points to `apps/dapp-template-evm/out/`
+- [x] **Build successful** - 12 static pages generated
+
 ---
 
 ## 🔄 Đang làm / Cần fix
 
-*Không còn task nào cần hoàn thành*
+### Netlify Deployment
+- [x] Build thành công (static export)
+- [ ] Push code lên GitHub 
+- [ ] Redeploy trên Netlify
 
 ---
 
