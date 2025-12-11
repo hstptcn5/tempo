@@ -3,11 +3,12 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { useAccount, useChainId, useSwitchChain, useWriteContract } from 'wagmi';
-import { parseUnits, isAddress, formatUnits, type Address, type Hex } from 'viem';
+import { parseUnits, isAddress, formatUnits, type Address } from 'viem';
 import { TOKENS, CHAIN_IDS, tip20Abi, type TokenInfo } from '@hst/abis';
-import { ConnectButton, ChainSelector, TxToastContainer, useTxToast } from '@hst/ui-web3';
+import { ConnectButton, TxToastContainer, useTxToast } from '@hst/ui-web3';
 import { useTokenBalance, formatBalance, decodeError, getByteLength } from '@hst/hooks-web3';
-import { chains, getExplorerUrl } from '@hst/web3-config';
+import { getExplorerUrl } from '@hst/web3-config';
+import { MinecraftNavbar } from '../components/MinecraftNavbar';
 import {
     type BatchMode,
     type BatchRecipientInput,
@@ -59,7 +60,7 @@ function FeatureGate({ children }: { children: React.ReactNode }) {
                 <div className="text-center max-w-md">
                     <div className="text-6xl mb-4">🔒</div>
                     <h1 className="text-2xl font-bold mb-2">Feature Not Enabled</h1>
-                    <p className="text-white/50 mb-4">
+                    <p className="text-aqua-text/60 mb-4">
                         Batch payments are behind a feature flag. Set{' '}
                         <code className="text-amber-400">NEXT_PUBLIC_TEMPO_BATCH=1</code>{' '}
                         in your environment to enable.
@@ -74,19 +75,22 @@ function FeatureGate({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
 }
 
-// SSR Guard
+// SSR Guard - waits for client-side hydration
 function SSRGuard({ children }: { children: React.ReactNode }) {
     const [mounted, setMounted] = useState(false);
-    useEffect(() => setMounted(true), []);
-    
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
     if (!mounted) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin w-8 h-8 border-2 border-white/20 border-t-purple-400 rounded-full" />
+            <div className="min-h-screen bg-aqua-bg flex items-center justify-center">
+                <div className="animate-spin w-8 h-8 border-2 border-aqua-cyan/20 border-t-aqua-cyan rounded-full" />
             </div>
         );
     }
-    
+
     return <>{children}</>;
 }
 
@@ -195,12 +199,12 @@ function TempoBatchContent() {
     // Calculate totals and validation
     const batchValidation = useMemo(() => {
         if (!selectedToken) {
-            return { 
-                totalAmount: 0n, 
-                validCount: 0, 
-                invalidCount: 0, 
-                calls: [], 
-                errors: [] as string[], 
+            return {
+                totalAmount: 0n,
+                validCount: 0,
+                invalidCount: 0,
+                calls: [],
+                errors: [] as string[],
                 isValid: false,
                 recipients: [],
             };
@@ -346,7 +350,7 @@ function TempoBatchContent() {
             try {
                 // Use transfer or transferWithMemo depending on memo presence
                 const hasMemo = recipient.memo && recipient.memo.trim().length > 0;
-                
+
                 let hash: Address;
                 if (hasMemo) {
                     const { encodeMemoBytes32 } = await import('@hst/hooks-web3');
@@ -383,7 +387,7 @@ function TempoBatchContent() {
                 });
             } catch (err) {
                 const decoded = decodeError(err);
-                
+
                 if (decoded.isUserRejection) {
                     setBatchStatus('failed');
                     update('batch', {
@@ -464,7 +468,7 @@ function TempoBatchContent() {
         try {
             // Build arrays for BatchTransfer
             const { recipients, amounts, hasMemos } = buildBatchTransferArrays(batchValidation.recipients);
-            
+
             // Step 1: Approve BatchTransfer contract for total amount
             update('batch', {
                 message: `Approving BatchTransfer contract for ${formatUnits(batchValidation.totalAmount, selectedToken.decimals)} ${selectedToken.symbol}...`,
@@ -494,7 +498,7 @@ function TempoBatchContent() {
             // contract-to-user transfers via transferWithMemo. Using batchTransfer
             // (without memo) which works with standard transferFrom.
             // TODO: Re-enable batchTransferWithMemo when contract compatibility is confirmed
-            
+
             const batchHash = await writeContractAsync({
                 address: BATCH_TRANSFER_ADDRESS,
                 abi: batchTransferAbi,
@@ -502,7 +506,7 @@ function TempoBatchContent() {
                 args: [selectedToken.address as Address, recipients, amounts],
                 chainId: TEMPO_CHAIN_ID,
             });
-            
+
             // Log warning if memos were provided but not used
             if (hasMemos) {
                 console.warn('Atomic batch: Memos were provided but not included (using batchTransfer without memo support)');
@@ -526,7 +530,7 @@ function TempoBatchContent() {
             });
         } catch (err) {
             const decoded = decodeError(err);
-            
+
             if (decoded.isUserRejection) {
                 setBatchStatus('idle');
                 hide('batch');
@@ -534,7 +538,7 @@ function TempoBatchContent() {
             }
 
             setBatchStatus('failed');
-            
+
             // Check for TIP-403 compliance errors - provide specific guidance
             if (decoded.isComplianceError) {
                 update('batch', {
@@ -575,35 +579,9 @@ function TempoBatchContent() {
     const canExecuteAtomic = canExecute && batchValidation.isValid && batchValidation.errors.length === 0;
 
     return (
-        <div className="min-h-screen">
-            {/* Header */}
-            <header className="sticky top-0 z-50 glass">
-                <div className="container mx-auto flex items-center justify-between px-4 py-4">
-                    <div className="flex items-center gap-8">
-                        <Link href="/" className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                            dApp Template
-                        </Link>
-                        <nav className="hidden md:flex items-center gap-6">
-                            <Link href="/" className="text-white/70 hover:text-white transition-colors">
-                                Dashboard
-                            </Link>
-                            <Link href="/tempo-pay" className="text-white/70 hover:text-white transition-colors">
-                                Tempo Pay
-                            </Link>
-                            <Link href="/tempo-batch" className="text-purple-400 font-medium">
-                                Batch Pay
-                            </Link>
-                            <Link href="/tempo-sponsor" className="text-white/70 hover:text-white transition-colors">
-                                Sponsored
-                            </Link>
-                        </nav>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <ChainSelector supportedChains={[chains.tempoTestnet] as any} />
-                        <ConnectButton showBalance={false} />
-                    </div>
-                </div>
-            </header>
+        <div className="min-h-screen bg-background-light dark:bg-background-dark">
+            {/* Minecraft-style Navbar */}
+            <MinecraftNavbar activePage="Batch" />
 
             {/* Main Content */}
             <main className="container mx-auto px-4 py-8">
@@ -611,30 +589,30 @@ function TempoBatchContent() {
                     {/* Header Section */}
                     <div className="mb-8">
                         <div className="flex items-center gap-3 mb-2">
-                            <div className="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center">
-                                <span className="text-purple-400 text-xl">📦</span>
+                            <div className="w-10 h-10 bg-primary border-4 border-black flex items-center justify-center">
+                                <span className="material-icons text-black">view_module</span>
                             </div>
-                            <h1 className="text-3xl font-bold">Batch Payments</h1>
+                            <h1 className="text-3xl font-display text-gray-900 dark:text-white">Batch Payments</h1>
                         </div>
-                        <p className="text-white/50">
+                        <p className="text-gray-600 dark:text-gray-400 font-mono">
                             Send stablecoin payments to multiple recipients
                         </p>
                     </div>
 
                     {/* Network Notice */}
                     {isConnected && !isOnTempo && (
-                        <div className="mb-6 p-4 rounded-lg bg-amber-500/10 border border-amber-500/30">
+                        <div className="mb-6 p-4 border-4 border-amber-500 bg-amber-50 dark:bg-amber-900/20 shadow-block">
                             <div className="flex items-start gap-3">
-                                <div className="text-amber-400 text-xl">⚠️</div>
+                                <div className="text-amber-500 text-xl">⚠️</div>
                                 <div className="flex-1">
-                                    <h3 className="text-amber-400 font-medium mb-1">Wrong Network</h3>
-                                    <p className="text-white/70 text-sm mb-3">
+                                    <h3 className="text-amber-700 dark:text-amber-300 font-display mb-1">Wrong Network</h3>
+                                    <p className="text-amber-700/70 dark:text-amber-400 text-sm mb-3 font-mono">
                                         Please switch to Tempo Testnet to use batch payments.
                                     </p>
                                     <button
                                         onClick={handleSwitchToTempo}
                                         disabled={isSwitchingChain}
-                                        className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-black font-medium rounded-lg transition-colors disabled:opacity-50"
+                                        className="px-4 py-2 bg-amber-500 text-black border-2 border-black font-display uppercase hover:bg-amber-400 transition-colors disabled:opacity-50"
                                     >
                                         {isSwitchingChain ? 'Switching...' : 'Switch to Tempo Testnet'}
                                     </button>
@@ -644,48 +622,46 @@ function TempoBatchContent() {
                     )}
 
                     {/* Batch Mode Toggle */}
-                    <div className="card mb-6">
-                        <h3 className="font-medium mb-3">Batch Mode</h3>
+                    <div className="card-block mb-6">
+                        <h3 className="font-display text-gray-900 dark:text-white mb-3">Batch Mode</h3>
                         <div className="flex gap-2 mb-3">
                             <button
                                 onClick={() => setBatchMode('sequential')}
                                 disabled={batchStatus === 'executing'}
-                                className={`flex-1 px-4 py-3 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 ${
-                                    batchMode === 'sequential'
-                                        ? 'bg-purple-500 text-white'
-                                        : 'bg-white/10 hover:bg-white/20'
-                                }`}
+                                className={`flex-1 px-4 py-3 text-sm font-display uppercase border-2 border-black transition-colors disabled:opacity-50 ${batchMode === 'sequential'
+                                    ? 'bg-primary text-black shadow-block'
+                                    : 'bg-white hover:bg-gray-100 text-gray-500'
+                                    }`}
                             >
                                 Sequential ✅
                             </button>
                             <button
                                 onClick={() => setBatchMode('atomic')}
                                 disabled={batchStatus === 'executing' || !BATCH_TRANSFER_ENABLED}
-                                className={`flex-1 px-4 py-3 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 ${
-                                    batchMode === 'atomic'
-                                        ? 'bg-purple-500 text-white'
-                                        : 'bg-white/10 hover:bg-white/20'
-                                }`}
+                                className={`flex-1 px-4 py-3 text-sm font-display uppercase border-2 border-black transition-colors disabled:opacity-50 ${batchMode === 'atomic'
+                                    ? 'bg-primary text-black shadow-block'
+                                    : 'bg-white hover:bg-gray-100 text-gray-500'
+                                    }`}
                             >
                                 Atomic ⚡
                             </button>
                         </div>
-                        <p className="text-white/50 text-sm">
+                        <p className="text-aqua-text/60 text-sm">
                             {getBatchModeDescription(batchMode)}
                         </p>
                         {batchMode === 'sequential' && (
-                            <div className="mt-2 p-2 rounded bg-green-500/10 border border-green-500/30">
-                                <p className="text-green-400 text-xs">
+                            <div className="mt-2 p-2 rounded-xl bg-green-50 border border-green-200">
+                                <p className="text-green-700 text-xs">
                                     ✅ Each payment sent individually. Partial success possible.
                                 </p>
                             </div>
                         )}
                         {batchMode === 'atomic' && (
-                            <div className="mt-2 p-2 rounded bg-amber-500/10 border border-amber-500/30">
-                                <p className="text-amber-400 text-xs">
+                            <div className="mt-2 p-2 rounded-xl bg-amber-50 border border-amber-200">
+                                <p className="text-amber-700 text-xs">
                                     ⚠️ <strong>All-or-nothing:</strong> If any transfer fails, the entire batch reverts.
                                 </p>
-                                <p className="text-amber-400/70 text-xs mt-1">
+                                <p className="text-amber-600/70 text-xs mt-1">
                                     ⚠️ <strong>Note:</strong> Memos are NOT included in atomic mode (TIP-20 limitation).
                                     Use Sequential mode if you need memos.
                                 </p>
@@ -694,20 +670,19 @@ function TempoBatchContent() {
                     </div>
 
                     {/* Token Selection */}
-                    <div className="card mb-6">
+                    <div className="card-block mb-6">
                         <div className="mb-4">
-                            <label className="block text-sm text-white/50 mb-2">TIP-20 Stablecoin</label>
+                            <label className="block text-sm font-display mb-2 text-gray-700 dark:text-gray-300">TIP-20 Stablecoin</label>
                             <div className="flex flex-wrap gap-2">
                                 {tokenList.map((token) => (
                                     <button
                                         key={token.address}
                                         onClick={() => setSelectedToken(token)}
                                         disabled={batchStatus === 'executing'}
-                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 ${
-                                            selectedToken?.address === token.address
-                                                ? 'bg-purple-500 text-white'
-                                                : 'bg-white/10 hover:bg-white/20'
-                                        }`}
+                                        className={`px-4 py-2 border-2 border-black text-sm font-display uppercase transition-all disabled:opacity-50 ${selectedToken?.address === token.address
+                                            ? 'bg-primary text-black shadow-block'
+                                            : 'bg-white hover:bg-gray-50 text-gray-500'
+                                            }`}
                                     >
                                         {token.symbol}
                                     </button>
@@ -717,9 +692,9 @@ function TempoBatchContent() {
 
                         {/* Balance Display */}
                         {selectedToken && balance !== undefined && (
-                            <div className="flex justify-between items-center text-sm">
-                                <span className="text-white/50">Your Balance:</span>
-                                <span className={exceedsBalance ? 'text-red-400' : 'text-white'}>
+                            <div className="flex justify-between items-center text-sm font-mono">
+                                <span className="text-gray-500">Your Balance:</span>
+                                <span className={exceedsBalance ? 'text-red-500' : 'text-gray-900 dark:text-white'}>
                                     {formatBalance(balance, selectedToken.decimals)} {selectedToken.symbol}
                                 </span>
                             </div>
@@ -727,9 +702,9 @@ function TempoBatchContent() {
                     </div>
 
                     {/* Recipients List */}
-                    <div className="card mb-6">
+                    <div className="card-block mb-6">
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="font-medium">Recipients</h3>
+                            <h3 className="font-display text-gray-900 dark:text-white">Recipients</h3>
                             <div className="flex gap-2">
                                 <input
                                     ref={fileInputRef}
@@ -741,14 +716,14 @@ function TempoBatchContent() {
                                 <button
                                     onClick={() => fileInputRef.current?.click()}
                                     disabled={batchStatus === 'executing'}
-                                    className="px-3 py-1 text-sm bg-white/10 hover:bg-white/20 rounded-lg disabled:opacity-50"
+                                    className="px-3 py-1 text-sm bg-white border-2 border-black hover:bg-gray-100 disabled:opacity-50 font-display uppercase"
                                 >
                                     📄 Import CSV
                                 </button>
                                 <button
                                     onClick={clearAll}
                                     disabled={batchStatus === 'executing'}
-                                    className="px-3 py-1 text-sm bg-white/10 hover:bg-white/20 rounded-lg disabled:opacity-50"
+                                    className="px-3 py-1 text-sm bg-white border-2 border-black hover:bg-gray-100 disabled:opacity-50 font-display uppercase"
                                 >
                                     🗑️ Clear
                                 </button>
@@ -759,10 +734,10 @@ function TempoBatchContent() {
                             CSV format: <code className="text-purple-400">address,amount,memo</code>
                         </p>
 
-                        <div className="space-y-3 max-h-96 overflow-y-auto">
+                        <div className="space-y-3 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
                             {recipients.map((recipient, index) => (
                                 <div key={recipient.id} className="flex gap-2 items-start">
-                                    <span className="text-white/30 text-sm w-6 pt-3">{index + 1}.</span>
+                                    <span className="text-gray-500 font-mono text-sm w-6 pt-3">{index + 1}.</span>
                                     <div className="flex-1 space-y-2">
                                         <input
                                             type="text"
@@ -770,11 +745,10 @@ function TempoBatchContent() {
                                             onChange={(e) => updateRecipient(recipient.id, 'address', e.target.value)}
                                             placeholder="0x... recipient address"
                                             disabled={batchStatus === 'executing'}
-                                            className={`w-full px-3 py-2 bg-white/5 border rounded-lg focus:outline-none font-mono text-sm disabled:opacity-50 ${
-                                                recipient.address && !isAddress(recipient.address)
-                                                    ? 'border-red-500/50'
-                                                    : 'border-white/10 focus:border-purple-500'
-                                            }`}
+                                            className={`w-full px-3 py-2 bg-white border-2 font-mono text-sm disabled:opacity-50 focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${recipient.address && !isAddress(recipient.address)
+                                                ? 'border-red-500'
+                                                : 'border-black'
+                                                }`}
                                         />
                                         <div className="flex gap-2">
                                             <input
@@ -783,7 +757,7 @@ function TempoBatchContent() {
                                                 onChange={(e) => updateRecipient(recipient.id, 'amount', e.target.value)}
                                                 placeholder="Amount"
                                                 disabled={batchStatus === 'executing'}
-                                                className="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-purple-500 text-sm disabled:opacity-50"
+                                                className="flex-1 px-3 py-2 bg-white border-2 border-black focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] font-mono text-sm disabled:opacity-50"
                                             />
                                             <div className="flex-1 relative">
                                                 <input
@@ -792,16 +766,14 @@ function TempoBatchContent() {
                                                     onChange={(e) => updateRecipient(recipient.id, 'memo', e.target.value)}
                                                     placeholder="Memo (≤32 bytes)"
                                                     disabled={batchStatus === 'executing'}
-                                                    className={`w-full px-3 py-2 bg-white/5 border rounded-lg focus:outline-none text-sm disabled:opacity-50 ${
-                                                        recipient.memo && getByteLength(recipient.memo) > 32
-                                                            ? 'border-red-500/50'
-                                                            : 'border-white/10 focus:border-purple-500'
-                                                    }`}
+                                                    className={`w-full px-3 py-2 bg-white border-2 font-mono text-sm disabled:opacity-50 focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${recipient.memo && getByteLength(recipient.memo) > 32
+                                                        ? 'border-red-500'
+                                                        : 'border-black'
+                                                        }`}
                                                 />
                                                 {recipient.memo && (
-                                                    <span className={`absolute right-2 top-2 text-xs ${
-                                                        getByteLength(recipient.memo) > 32 ? 'text-red-400' : 'text-white/30'
-                                                    }`}>
+                                                    <span className={`absolute right-2 top-2 text-xs ${getByteLength(recipient.memo) > 32 ? 'text-red-400' : 'text-white/30'
+                                                        }`}>
                                                         {getByteLength(recipient.memo)}/32
                                                     </span>
                                                 )}
@@ -814,7 +786,7 @@ function TempoBatchContent() {
                                     <button
                                         onClick={() => removeRecipient(recipient.id)}
                                         disabled={recipients.length <= 1 || batchStatus === 'executing'}
-                                        className="p-2 text-white/50 hover:text-red-400 disabled:opacity-30"
+                                        className="p-2 text-aqua-text/60 hover:text-red-400 disabled:opacity-30"
                                     >
                                         ✕
                                     </button>
@@ -825,7 +797,7 @@ function TempoBatchContent() {
                         <button
                             onClick={addRecipient}
                             disabled={batchStatus === 'executing'}
-                            className="w-full mt-4 py-2 border border-dashed border-white/20 rounded-lg text-white/50 hover:text-white hover:border-white/40 transition-colors disabled:opacity-50"
+                            className="w-full mt-4 py-2 border-2 border-dashed border-gray-300 rounded-none text-gray-500 font-mono hover:text-black hover:border-black hover:bg-gray-50 transition-colors disabled:opacity-50"
                         >
                             + Add Recipient
                         </button>
@@ -836,23 +808,23 @@ function TempoBatchContent() {
                         <h3 className="font-medium mb-3">Summary</h3>
                         <div className="space-y-2 text-sm">
                             <div className="flex justify-between">
-                                <span className="text-white/50">Mode:</span>
+                                <span className="text-aqua-text/60">Mode:</span>
                                 <span className={batchMode === 'atomic' ? 'text-purple-400' : 'text-white'}>
                                     {batchMode === 'atomic' ? '⚡ Atomic (1 tx)' : '📝 Sequential'}
                                 </span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-white/50">Valid Recipients:</span>
+                                <span className="text-aqua-text/60">Valid Recipients:</span>
                                 <span className="text-green-400">{batchValidation.validCount}</span>
                             </div>
                             {batchValidation.invalidCount > 0 && (
                                 <div className="flex justify-between">
-                                    <span className="text-white/50">Invalid:</span>
+                                    <span className="text-aqua-text/60">Invalid:</span>
                                     <span className="text-red-400">{batchValidation.invalidCount}</span>
                                 </div>
                             )}
                             <div className="flex justify-between pt-2 border-t border-white/10">
-                                <span className="text-white/50">Total Amount:</span>
+                                <span className="text-aqua-text/60">Total Amount:</span>
                                 <span className={exceedsBalance ? 'text-red-400' : 'text-white font-medium'}>
                                     {selectedToken ? formatUnits(batchValidation.totalAmount, selectedToken.decimals) : '0'}{' '}
                                     {selectedToken?.symbol ?? 'USD'}
@@ -888,8 +860,8 @@ function TempoBatchContent() {
                                 </div>
                             </div>
                             <div className="flex justify-between text-sm">
-                                <span className="text-white/50">
-                                    {batchMode === 'atomic' 
+                                <span className="text-aqua-text/60">
+                                    {batchMode === 'atomic'
                                         ? 'Submitting atomic transaction...'
                                         : `${progress.current} / ${progress.total} processed`
                                     }
@@ -908,7 +880,7 @@ function TempoBatchContent() {
 
                     {/* Results (after completion) */}
                     {(batchStatus === 'completed' || batchStatus === 'failed') && progress.txHashes.length > 0 && (
-                        <div className="card mb-6">
+                        <div className="card-block mb-6">
                             <h3 className="font-medium mb-3">
                                 {batchMode === 'atomic' ? 'Transaction' : 'Transaction Hashes'}
                             </h3>
@@ -919,7 +891,7 @@ function TempoBatchContent() {
                                         href={getExplorerUrl(TEMPO_CHAIN_ID, 'tx', hash)}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="block text-sm font-mono text-purple-400 hover:underline"
+                                        className="block text-sm font-mono text-primary-dark hover:underline"
                                     >
                                         {batchMode === 'atomic' ? '' : `${i + 1}. `}{hash.slice(0, 10)}...{hash.slice(-8)} ↗
                                     </a>
@@ -935,7 +907,7 @@ function TempoBatchContent() {
                         <button
                             onClick={handleSwitchToTempo}
                             disabled={isSwitchingChain}
-                            className="btn btn-primary w-full bg-purple-500 hover:bg-purple-600"
+                            className="btn-block w-full"
                         >
                             {isSwitchingChain ? 'Switching Network...' : 'Switch to Tempo Testnet'}
                         </button>
@@ -943,17 +915,17 @@ function TempoBatchContent() {
                         <button
                             onClick={executeBatch}
                             disabled={batchMode === 'atomic' ? !canExecuteAtomic : !canExecute}
-                            className="btn btn-primary w-full bg-purple-500 hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="btn-block w-full disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {batchStatus === 'executing'
-                                ? batchMode === 'atomic' 
+                                ? batchMode === 'atomic'
                                     ? 'Submitting...'
                                     : `Processing ${progress.current}/${progress.total}...`
                                 : batchStatus === 'completed'
-                                ? 'Start New Batch'
-                                : batchMode === 'atomic'
-                                ? `Send ${batchValidation.validCount} Transfers (1 Transaction)`
-                                : `Send to ${batchValidation.validCount} Recipient${batchValidation.validCount !== 1 ? 's' : ''}`
+                                    ? 'Start New Batch'
+                                    : batchMode === 'atomic'
+                                        ? `Send ${batchValidation.validCount} Transfers (1 Transaction)`
+                                        : `Send to ${batchValidation.validCount} Recipient${batchValidation.validCount !== 1 ? 's' : ''}`
                             }
                         </button>
                     )}
@@ -962,7 +934,7 @@ function TempoBatchContent() {
                     {(batchStatus === 'completed' || batchStatus === 'failed') && (
                         <button
                             onClick={clearAll}
-                            className="w-full mt-3 py-2 text-sm text-white/50 hover:text-white"
+                            className="w-full mt-3 py-2 text-sm text-aqua-text/60 hover:text-white"
                         >
                             ↻ Reset & Start New Batch
                         </button>

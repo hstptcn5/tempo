@@ -1,13 +1,12 @@
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import Link from 'next/link';
 import { useAccount, useChainId, useSwitchChain } from 'wagmi';
 import { parseUnits, isAddress, type Address } from 'viem';
 import { TOKENS, CHAIN_IDS, type TokenInfo } from '@hst/abis';
-import { TokenInput, ConnectButton, ChainSelector, TxToastContainer, useTxToast, MemoInputBytes32, TempoPayReceipt, type PaymentDetails } from '@hst/ui-web3';
-import { useTokenBalance, useTip20TransferWithMemo, useRecentTip20Payments, useComplianceCheck, type EncodedMemo, type ComplianceStatus } from '@hst/hooks-web3';
-import { chains } from '@hst/web3-config';
+import { TokenInput, ConnectButton, TxToastContainer, useTxToast, MemoInputBytes32, TempoPayReceipt, type PaymentDetails } from '@hst/ui-web3';
+import { useTokenBalance, useTip20TransferWithMemo, useRecentTip20Payments, useComplianceCheck, type EncodedMemo } from '@hst/hooks-web3';
+import { MinecraftNavbar } from '../components/MinecraftNavbar';
 
 // Tempo testnet chain ID
 const TEMPO_CHAIN_ID = CHAIN_IDS.TEMPO_TESTNET;
@@ -27,7 +26,7 @@ export default function TempoPayPage() {
     const [amount, setAmount] = useState('');
     const [invoiceId, setInvoiceId] = useState('');
     const [encodedMemo, setEncodedMemo] = useState<EncodedMemo | null>(null);
-    
+
     // Store last successful payment for receipt display
     const [lastPayment, setLastPayment] = useState<PaymentDetails | null>(null);
 
@@ -127,13 +126,13 @@ export default function TempoPayPage() {
         onError: (err) => {
             // Update status to failed
             setLastPayment(prev => prev ? { ...prev, status: 'failed' } : null);
-            
+
             // Check if this is a compliance error for better messaging
             // The decodeError in useTip20TransferWithMemo already classifies compliance errors
             const isComplianceIssue = err.message.toLowerCase().includes('not allowed') ||
-                                      err.message.toLowerCase().includes('blocked') ||
-                                      err.message.toLowerCase().includes('policy');
-            
+                err.message.toLowerCase().includes('blocked') ||
+                err.message.toLowerCase().includes('policy');
+
             show('transfer', {
                 status: 'error',
                 title: isComplianceIssue ? 'Compliance Policy Block' : 'Transfer Failed',
@@ -175,7 +174,7 @@ export default function TempoPayPage() {
     const canTransfer = isConnected && isOnTempo && isValidRecipient && parsedAmount > 0n && !hasInsufficientBalance && encodedMemo !== null;
 
     // Get all token addresses for querying recent payments
-    const tokenAddresses = useMemo(() => 
+    const tokenAddresses = useMemo(() =>
         tokenList.map(t => t.address as Address),
         [tokenList]
     );
@@ -204,46 +203,9 @@ export default function TempoPayPage() {
     }, [tokenList]);
 
     return (
-        <div className="min-h-screen">
-            {/* Header */}
-            <header className="sticky top-0 z-50 glass">
-                <div className="container mx-auto flex items-center justify-between px-4 py-4">
-                    <div className="flex items-center gap-8">
-                        <Link href="/" className="text-xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
-                            dApp Template
-                        </Link>
-                        <nav className="hidden md:flex items-center gap-6">
-                            <Link href="/" className="text-white/70 hover:text-white transition-colors">
-                                Dashboard
-                            </Link>
-                            <Link href="/read" className="text-white/70 hover:text-white transition-colors">
-                                Read
-                            </Link>
-                            <Link href="/write" className="text-white/70 hover:text-white transition-colors">
-                                Write
-                            </Link>
-                            <Link href="/events" className="text-white/70 hover:text-white transition-colors">
-                                Events
-                            </Link>
-                            <Link href="/tempo-pay" className="text-emerald-400 font-medium">
-                                Tempo Pay
-                            </Link>
-                            {process.env.NEXT_PUBLIC_TEMPO_BATCH === '1' && (
-                                <Link href="/tempo-batch" className="text-white/70 hover:text-white transition-colors">
-                                    Batch Pay
-                                </Link>
-                            )}
-                            <Link href="/tempo-sponsor" className="text-white/70 hover:text-white transition-colors">
-                                Sponsored
-                            </Link>
-                        </nav>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <ChainSelector supportedChains={[chains.tempoTestnet]} />
-                        <ConnectButton showBalance={false} />
-                    </div>
-                </div>
-            </header>
+        <div className="min-h-screen bg-background-light dark:bg-background-dark">
+            {/* Minecraft-style Navbar */}
+            <MinecraftNavbar activePage="Pay" />
 
             {/* Main Content */}
             <main className="container mx-auto px-4 py-8">
@@ -251,30 +213,30 @@ export default function TempoPayPage() {
                     {/* Header Section */}
                     <div className="mb-8">
                         <div className="flex items-center gap-3 mb-2">
-                            <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                                <span className="text-emerald-400 text-xl">$</span>
+                            <div className="w-10 h-10 bg-primary border-4 border-black flex items-center justify-center">
+                                <span className="material-icons text-black">payments</span>
                             </div>
-                            <h1 className="text-3xl font-bold">Tempo Pay</h1>
+                            <h1 className="text-3xl font-display text-gray-900 dark:text-white">Tempo Pay</h1>
                         </div>
-                        <p className="text-white/50">
+                        <p className="text-gray-600 dark:text-gray-400 font-mono">
                             Send stablecoin payments with invoice memos on Tempo Testnet
                         </p>
                     </div>
 
                     {/* Network Notice */}
                     {isConnected && !isOnTempo && (
-                        <div className="mb-6 p-4 rounded-lg bg-amber-500/10 border border-amber-500/30">
+                        <div className="mb-6 p-4 border-4 border-amber-500 bg-amber-50 dark:bg-amber-900/20 shadow-block">
                             <div className="flex items-start gap-3">
-                                <div className="text-amber-400 text-xl">⚠️</div>
+                                <div className="text-amber-500 text-xl">⚠️</div>
                                 <div className="flex-1">
-                                    <h3 className="text-amber-400 font-medium mb-1">Wrong Network</h3>
-                                    <p className="text-white/70 text-sm mb-3">
+                                    <h3 className="text-amber-700 font-medium mb-1">Wrong Network</h3>
+                                    <p className="text-amber-700/70 text-sm mb-3">
                                         Please switch to Tempo Testnet to use this feature.
                                     </p>
                                     <button
                                         onClick={handleSwitchToTempo}
                                         disabled={isSwitchingChain}
-                                        className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-black font-medium rounded-lg transition-colors disabled:opacity-50"
+                                        className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-full transition-colors disabled:opacity-50"
                                     >
                                         {isSwitchingChain ? 'Switching...' : 'Switch to Tempo Testnet'}
                                     </button>
@@ -284,28 +246,28 @@ export default function TempoPayPage() {
                     )}
 
                     {/* Info Card */}
-                    <div className="mb-6 p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/30">
-                        <h3 className="text-emerald-400 font-medium mb-2">ℹ️ About Tempo</h3>
-                        <ul className="text-white/70 text-sm space-y-1">
+                    <div className="mb-6 card-block bg-blue-50 dark:bg-blue-900/20 !border-2 !p-4 !shadow-none">
+                        <h3 className="text-blue-700 dark:text-blue-300 font-display mb-2 text-lg">ℹ️ About Tempo</h3>
+                        <ul className="text-gray-600 dark:text-gray-400 text-sm font-mono space-y-1">
                             <li>• <strong>No native gas token</strong> - fees paid in TIP-20 stablecoins</li>
                             <li>• <strong>32-byte memo</strong> - attach invoice IDs for reconciliation</li>
-                            <li>• <strong>Testnet faucet:</strong> <code className="text-emerald-400">cast rpc tempo_fundAddress YOUR_ADDRESS --rpc-url https://rpc.testnet.tempo.xyz</code></li>
+                            <li>• <strong>Testnet faucet:</strong> <code className="bg-black/10 dark:bg-white/10 px-1">cast rpc tempo_fundAddress YOUR_ADDRESS</code></li>
                         </ul>
                     </div>
 
                     {/* Payment Form */}
-                    <div className="card">
+                    <div className="card-block">
                         {/* Token Selection */}
-                        <div className="mb-4">
-                            <label className="block text-sm text-white/50 mb-2">TIP-20 Stablecoin</label>
+                        <div className="mb-6">
+                            <label className="block text-sm font-display mb-2 text-gray-700 dark:text-gray-300">TIP-20 Stablecoin</label>
                             <div className="flex flex-wrap gap-2">
                                 {tokenList.map((token) => (
                                     <button
                                         key={token.address}
                                         onClick={() => setSelectedToken(token)}
-                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${selectedToken?.address === token.address
-                                            ? 'bg-emerald-500 text-white'
-                                            : 'bg-white/10 hover:bg-white/20'
+                                        className={`px-4 py-2 text-sm font-display uppercase border-2 border-black transition-all ${selectedToken?.address === token.address
+                                            ? 'bg-primary text-black shadow-block'
+                                            : 'bg-white hover:bg-gray-50 text-gray-600'
                                             }`}
                                     >
                                         {token.symbol}
@@ -313,7 +275,7 @@ export default function TempoPayPage() {
                                 ))}
                             </div>
                             {!isOnTempo && tokenList.length === 0 && (
-                                <p className="text-white/50 text-sm mt-2">
+                                <p className="text-aqua-text/50 text-sm mt-2">
                                     Connect to Tempo Testnet to see available tokens
                                 </p>
                             )}
@@ -332,64 +294,63 @@ export default function TempoPayPage() {
                         </div>
 
                         {/* Recipient Address */}
-                        <div className="mb-4">
-                            <label className="block text-sm text-white/50 mb-2">Recipient Address</label>
+                        <div className="mb-6">
+                            <label className="block text-sm font-display mb-2 text-gray-700 dark:text-gray-300">Recipient Address</label>
                             <input
                                 type="text"
                                 value={recipientAddress}
                                 onChange={(e) => setRecipientAddress(e.target.value)}
                                 placeholder="0x..."
-                                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-emerald-500 font-mono text-sm"
+                                className="w-full px-4 py-3 bg-white/60 border border-gray-200 rounded-xl focus:outline-none focus:border-aqua-cyan focus:ring-2 focus:ring-aqua-cyan/20 font-mono text-sm text-aqua-text"
                             />
                             {recipientAddress && !isValidRecipient && (
-                                <p className="text-red-400 text-sm mt-1">Invalid address</p>
+                                <p className="text-red-500 text-sm mt-1">Invalid address</p>
                             )}
                         </div>
 
                         {/* TIP-403 Compliance Status */}
                         {isValidRecipient && parsedAmount > 0n && (
-                            <div className={`mb-4 p-3 rounded-lg border ${
-                                complianceStatus === 'allowed' 
-                                    ? 'bg-green-500/10 border-green-500/30'
-                                    : complianceStatus === 'blocked'
-                                    ? 'bg-red-500/10 border-red-500/30'
+                            <div className={`mb-4 p-3 rounded-xl border ${complianceStatus === 'allowed'
+                                ? 'bg-green-50 border-green-200'
+                                : complianceStatus === 'blocked'
+                                    ? 'bg-red-50 border-red-200'
                                     : complianceStatus === 'checking'
-                                    ? 'bg-blue-500/10 border-blue-500/30'
-                                    : 'bg-white/5 border-white/10'
-                            }`}>
+                                        ? 'bg-blue-50 border-blue-200'
+                                        : 'bg-gray-50 border-gray-200'
+                                }`}>
                                 <div className="flex items-center gap-2 text-sm">
                                     {complianceStatus === 'checking' && (
                                         <>
-                                            <div className="animate-spin w-4 h-4 border-2 border-blue-400/30 border-t-blue-400 rounded-full" />
-                                            <span className="text-blue-400">Checking compliance...</span>
+                                            <div className="animate-spin w-4 h-4 border-2 border-blue-200 border-t-blue-500 rounded-full" />
+                                            <span className="text-blue-600">Checking compliance...</span>
                                         </>
                                     )}
                                     {complianceStatus === 'allowed' && (
                                         <>
-                                            <span className="text-green-400">✓</span>
-                                            <span className="text-green-400">Transfer likely allowed</span>
+                                            <span className="text-green-600">✓</span>
+                                            <span className="text-green-600">Transfer likely allowed</span>
                                         </>
                                     )}
                                     {complianceStatus === 'blocked' && (
                                         <>
-                                            <span className="text-red-400">✗</span>
-                                            <span className="text-red-400">{complianceMessage}</span>
+                                            <span className="text-red-600">✗</span>
+                                            <span className="text-red-600">{complianceMessage}</span>
                                         </>
                                     )}
                                     {complianceStatus === 'error' && (
                                         <>
-                                            <span className="text-amber-400">⚠</span>
-                                            <span className="text-amber-400">{complianceMessage}</span>
+                                            <span className="text-amber-600">⚠</span>
+                                            <span className="text-amber-600">{complianceMessage}</span>
                                         </>
                                     )}
                                     {complianceStatus === 'unknown' && (
-                                        <span className="text-white/40">
+                                        <span className="text-gray-500">
                                             Compliance check pending...
                                         </span>
                                     )}
                                 </div>
                                 {complianceStatus === 'blocked' && (
-                                    <p className="text-white/40 text-xs mt-1">
+                                    <p className="text-gray-500 text-xs mt-1">
                                         TIP-403 policy may block this transfer
                                     </p>
                                 )}
@@ -405,7 +366,7 @@ export default function TempoPayPage() {
                                 placeholder="INV-12345"
                                 showPreview={true}
                                 showByteCounter={true}
-                                accentColor="#10b981"
+                                accentColor="#00C6FF"
                             />
                         </div>
 
@@ -416,7 +377,7 @@ export default function TempoPayPage() {
                             <button
                                 onClick={handleSwitchToTempo}
                                 disabled={isSwitchingChain}
-                                className="btn btn-primary w-full bg-emerald-500 hover:bg-emerald-600"
+                                className="w-full py-3 bg-aqua-gradient text-white font-medium rounded-full shadow-water-glow hover:opacity-90 transition-opacity disabled:opacity-50"
                             >
                                 {isSwitchingChain ? 'Switching Network...' : 'Switch to Tempo Testnet'}
                             </button>
@@ -424,7 +385,7 @@ export default function TempoPayPage() {
                             <button
                                 onClick={handleTransfer}
                                 disabled={!canTransfer || isTransferring}
-                                className="btn btn-primary w-full bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full py-3 bg-aqua-gradient text-white font-medium rounded-full shadow-water-glow hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {isTransferring
                                     ? 'Sending...'
@@ -466,7 +427,7 @@ export default function TempoPayPage() {
                                 <h2 className="text-lg font-medium">
                                     📜 Recent Payments
                                 </h2>
-                                <span className="text-white/50 text-sm">
+                                <span className="text-aqua-text/60 text-sm">
                                     {showRecentPayments ? '▲ Hide' : '▼ Show'}
                                 </span>
                             </button>
@@ -474,7 +435,7 @@ export default function TempoPayPage() {
                             {showRecentPayments && (
                                 <div className="space-y-3">
                                     {isLoadingPayments && recentPayments.length === 0 && (
-                                        <div className="text-center py-8 text-white/50">
+                                        <div className="text-center py-8 text-aqua-text/60">
                                             <div className="animate-spin inline-block w-6 h-6 border-2 border-white/20 border-t-emerald-400 rounded-full mb-2"></div>
                                             <p>Loading payments...</p>
                                         </div>
@@ -487,7 +448,7 @@ export default function TempoPayPage() {
                                     )}
 
                                     {!isLoadingPayments && recentPayments.length === 0 && !paymentsError && (
-                                        <div className="text-center py-8 text-white/50">
+                                        <div className="text-center py-8 text-aqua-text/60">
                                             <p>No recent payments found</p>
                                             <p className="text-sm mt-1">Payments you send will appear here</p>
                                         </div>
@@ -534,7 +495,7 @@ export default function TempoPayPage() {
                                         <button
                                             onClick={refetchPayments}
                                             disabled={isLoadingPayments}
-                                            className="w-full py-2 text-sm text-white/50 hover:text-white/70 disabled:opacity-50"
+                                            className="w-full py-2 text-sm text-aqua-text/60 hover:text-white/70 disabled:opacity-50"
                                         >
                                             ↻ Refresh
                                         </button>

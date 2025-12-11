@@ -1,13 +1,13 @@
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import Link from 'next/link';
 import { useAccount, useChainId, useSwitchChain } from 'wagmi';
 import { parseUnits, formatUnits, type Address } from 'viem';
-import { TOKENS, CHAIN_IDS, type TokenInfo, calculateMinAmountOut } from '@hst/abis';
+import { TOKENS, CHAIN_IDS, type TokenInfo } from '@hst/abis';
 import { ConnectButton, TxToastContainer, useTxToast } from '@hst/ui-web3';
 import { useTokenBalance, useTempoSwapQuote, useTempoSwap, type SwapStep } from '@hst/hooks-web3';
-import { chains, getExplorerUrl } from '@hst/web3-config';
+import { getExplorerUrl } from '@hst/web3-config';
+import { MinecraftNavbar } from '../components/MinecraftNavbar';
 
 // Tempo testnet chain ID
 const TEMPO_CHAIN_ID = CHAIN_IDS.TEMPO_TESTNET;
@@ -36,13 +36,13 @@ function TokenSelector({
     excludeToken?: TokenInfo | null;
 }) {
     const [isOpen, setIsOpen] = useState(false);
-    const filteredTokens = excludeToken 
+    const filteredTokens = excludeToken
         ? tokens.filter(t => t.address !== excludeToken.address)
         : tokens;
 
     return (
         <div className="relative">
-            <label className="block text-sm text-white/50 mb-2">{label}</label>
+            <label className="block text-sm text-aqua-text/60 mb-2">{label}</label>
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
@@ -51,9 +51,9 @@ function TokenSelector({
                 {selectedToken ? (
                     <span className="font-medium">{selectedToken.symbol}</span>
                 ) : (
-                    <span className="text-white/50">Select token</span>
+                    <span className="text-aqua-text/60">Select token</span>
                 )}
-                <svg className="w-5 h-5 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-aqua-text/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
             </button>
@@ -68,12 +68,11 @@ function TokenSelector({
                                 onSelect(token);
                                 setIsOpen(false);
                             }}
-                            className={`w-full px-4 py-3 text-left hover:bg-white/10 transition-colors flex items-center justify-between ${
-                                selectedToken?.address === token.address ? 'bg-white/5' : ''
-                            }`}
+                            className={`w-full px-4 py-3 text-left hover:bg-white/10 transition-colors flex items-center justify-between ${selectedToken?.address === token.address ? 'bg-white/5' : ''
+                                }`}
                         >
                             <span className="font-medium">{token.symbol}</span>
-                            <span className="text-white/50 text-sm">{token.name}</span>
+                            <span className="text-aqua-text/60 text-sm">{token.name}</span>
                         </button>
                     ))}
                 </div>
@@ -101,13 +100,12 @@ function SwapStepIndicator({ step }: { step: SwapStep }) {
             {steps.map((s, i) => {
                 const isActive = s.key === step;
                 const isPast = steps.findIndex(st => st.key === step) > i;
-                
+
                 return (
                     <div key={s.key} className="flex items-center">
-                        <div className={`w-2 h-2 rounded-full ${
-                            isActive ? 'bg-cyan-400 animate-pulse' : 
+                        <div className={`w-2 h-2 rounded-full ${isActive ? 'bg-cyan-400 animate-pulse' :
                             isPast ? 'bg-green-400' : 'bg-white/20'
-                        }`} />
+                            }`} />
                         {i < steps.length - 1 && (
                             <div className={`w-8 h-0.5 ${isPast ? 'bg-green-400' : 'bg-white/20'}`} />
                         )}
@@ -275,14 +273,14 @@ export default function TempoSwapPage() {
 
     // Validation
     const hasInsufficientBalance = tokenInBalance !== undefined && parsedAmountIn > tokenInBalance;
-    const canSwap = 
-        isConnected && 
-        isOnTempo && 
-        tokenIn && 
-        tokenOut && 
-        parsedAmountIn > 0n && 
-        quote && 
-        !hasInsufficientBalance && 
+    const canSwap =
+        isConnected &&
+        isOnTempo &&
+        tokenIn &&
+        tokenOut &&
+        parsedAmountIn > 0n &&
+        quote &&
+        !hasInsufficientBalance &&
         !isSwapping &&
         isPairSupported;
 
@@ -301,52 +299,37 @@ export default function TempoSwapPage() {
         : '0';
 
     return (
-        <main className="min-h-screen bg-gradient-to-br from-[#0f0f1a] via-[#1a1a2e] to-[#16213e]">
-            {/* Header */}
-            <header className="border-b border-white/10 backdrop-blur-xl bg-black/20">
-                <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <Link href="/" className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                            Tempo DEX
-                        </Link>
-                        <nav className="hidden md:flex gap-4 ml-8">
-                            <Link href="/tempo-pay" className="text-white/70 hover:text-white transition-colors text-sm">
-                                Pay
-                            </Link>
-                            <Link href="/tempo-swap" className="text-cyan-400 text-sm font-medium">
-                                Swap
-                            </Link>
-                            <Link href="/tempo-batch" className="text-white/70 hover:text-white transition-colors text-sm">
-                                Batch
-                            </Link>
-                        </nav>
-                    </div>
-                    <ConnectButton />
-                </div>
-            </header>
+        <main className="min-h-screen bg-background-light dark:bg-background-dark">
+            {/* Minecraft-style Navbar */}
+            <MinecraftNavbar activePage="Swap" />
 
             {/* Main Content */}
             <div className="container mx-auto px-4 py-8 max-w-lg">
                 {/* Page Title */}
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold mb-2">
-                        Swap Stablecoins
-                    </h1>
-                    <p className="text-white/50">
+                    <div className="flex items-center justify-center gap-3 mb-2">
+                        <div className="w-10 h-10 bg-primary border-4 border-black flex items-center justify-center">
+                            <span className="material-icons text-black">swap_horiz</span>
+                        </div>
+                        <h1 className="text-3xl font-display text-gray-900 dark:text-white">
+                            Swap Stablecoins
+                        </h1>
+                    </div>
+                    <p className="text-gray-600 dark:text-gray-400 font-mono">
                         Swap TIP-20 stablecoins with minimal fees
                     </p>
                 </div>
 
                 {/* Network Warning */}
                 {isConnected && !isOnTempo && (
-                    <div className="mb-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30">
-                        <p className="text-amber-400 text-sm mb-3">
+                    <div className="mb-6 p-4 border-4 border-amber-500 bg-amber-50 dark:bg-amber-900/20 shadow-block">
+                        <p className="text-amber-700 dark:text-amber-300 text-sm mb-3 font-mono">
                             Please switch to Tempo Testnet to swap
                         </p>
                         <button
                             onClick={handleSwitchToTempo}
                             disabled={isSwitchingChain}
-                            className="px-4 py-2 bg-amber-500 text-black rounded-lg text-sm font-medium hover:bg-amber-400 transition-colors disabled:opacity-50"
+                            className="px-4 py-2 bg-amber-500 text-black border-2 border-black font-display uppercase hover:bg-amber-400 transition-colors disabled:opacity-50"
                         >
                             {isSwitchingChain ? 'Switching...' : 'Switch to Tempo'}
                         </button>
@@ -354,11 +337,11 @@ export default function TempoSwapPage() {
                 )}
 
                 {/* Swap Card */}
-                <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
+                <div className="card-block p-6">
                     {/* Token In */}
                     <div className="mb-2">
                         <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm text-white/50">You pay</span>
+                            <span className="text-sm text-aqua-text/60">You pay</span>
                             {isConnected && tokenIn && (
                                 <button
                                     onClick={handleMaxAmount}
@@ -375,7 +358,7 @@ export default function TempoSwapPage() {
                                     value={amountIn}
                                     onChange={(e) => setAmountIn(e.target.value)}
                                     placeholder="0.00"
-                                    className="w-full px-4 py-4 bg-white/5 border border-white/10 rounded-xl text-2xl focus:outline-none focus:border-cyan-500/50"
+                                    className="w-full px-4 py-4 bg-white border-2 border-black text-2xl font-mono focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black placeholder:text-gray-400"
                                 />
                             </div>
                             <div className="w-40">
@@ -408,16 +391,16 @@ export default function TempoSwapPage() {
                     {/* Token Out */}
                     <div className="mb-6">
                         <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm text-white/50">You receive</span>
+                            <span className="text-sm text-aqua-text/60">You receive</span>
                             {isConnected && tokenOut && (
-                                <span className="text-sm text-white/50">
+                                <span className="text-sm text-aqua-text/60">
                                     Balance: {parseFloat(formattedTokenOutBalance).toFixed(2)}
                                 </span>
                             )}
                         </div>
                         <div className="flex gap-3">
                             <div className="flex-1">
-                                <div className="w-full px-4 py-4 bg-white/5 border border-white/10 rounded-xl text-2xl text-white/70">
+                                <div className="w-full px-4 py-4 bg-gray-50 border-2 border-black text-2xl text-gray-900 font-mono">
                                     {isQuoteLoading ? (
                                         <span className="animate-pulse">Loading...</span>
                                     ) : quote ? (
@@ -441,24 +424,24 @@ export default function TempoSwapPage() {
 
                     {/* Quote Details */}
                     {quote && (
-                        <div className="mb-6 p-4 bg-white/5 rounded-xl space-y-2 text-sm">
+                        <div className="mb-6 p-4 border-2 border-black bg-gray-50 space-y-2 text-sm font-mono">
                             <div className="flex justify-between">
-                                <span className="text-white/50">Rate</span>
-                                <span>1 {tokenIn?.symbol} = {quote.rate.toFixed(4)} {tokenOut?.symbol}</span>
+                                <span className="text-gray-500">Rate</span>
+                                <span className="text-gray-900">1 {tokenIn?.symbol} = {quote.rate.toFixed(4)} {tokenOut?.symbol}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-white/50">Price Impact</span>
-                                <span className={quote.priceImpact > 1 ? 'text-amber-400' : 'text-green-400'}>
+                                <span className="text-gray-500">Price Impact</span>
+                                <span className={quote.priceImpact > 1 ? 'text-amber-600' : 'text-green-600'}>
                                     {quote.priceImpact.toFixed(2)}%
                                 </span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-white/50">Min. Received</span>
-                                <span>{parseFloat(formattedMinOut).toFixed(4)} {tokenOut?.symbol}</span>
+                                <span className="text-gray-500">Min. Received</span>
+                                <span className="text-gray-900">{parseFloat(formattedMinOut).toFixed(4)} {tokenOut?.symbol}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-white/50">Network Fee</span>
-                                <span className="text-green-400">Paid in {tokenIn?.symbol}</span>
+                                <span className="text-gray-500">Network Fee</span>
+                                <span className="text-green-600">Paid in {tokenIn?.symbol}</span>
                             </div>
                         </div>
                     )}
@@ -466,7 +449,7 @@ export default function TempoSwapPage() {
                     {/* Slippage Settings */}
                     <div className="mb-6">
                         <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm text-white/50">Slippage Tolerance</span>
+                            <span className="text-sm font-display text-gray-600">Slippage Tolerance</span>
                         </div>
                         <div className="flex gap-2">
                             {SLIPPAGE_PRESETS.map(({ label, value }) => (
@@ -476,11 +459,10 @@ export default function TempoSwapPage() {
                                         setSlippageBps(value);
                                         setCustomSlippage('');
                                     }}
-                                    className={`px-3 py-2 rounded-lg text-sm transition-colors ${
-                                        slippageBps === value && !customSlippage
-                                            ? 'bg-cyan-500 text-white'
-                                            : 'bg-white/5 hover:bg-white/10'
-                                    }`}
+                                    className={`px-3 py-2 text-sm font-mono border-2 border-black transition-colors ${slippageBps === value && !customSlippage
+                                        ? 'bg-primary text-black shadow-block translate-x-[2px] translate-y-[2px] shadow-none'
+                                        : 'bg-white hover:bg-gray-50 shadow-sm'
+                                        }`}
                                 >
                                     {label}
                                 </button>
@@ -497,7 +479,7 @@ export default function TempoSwapPage() {
                                         }
                                     }}
                                     placeholder="Custom"
-                                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm focus:outline-none focus:border-cyan-500/50"
+                                    className="w-full px-3 py-2 bg-white border-2 border-black text-sm font-mono focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                                 />
                             </div>
                         </div>
@@ -543,11 +525,11 @@ export default function TempoSwapPage() {
                         <button
                             onClick={handleSwap}
                             disabled={!canSwap}
-                            className="w-full py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl font-medium hover:from-cyan-400 hover:to-blue-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="btn-block w-full"
                         >
                             {isSwapping ? (
                                 <span className="flex items-center justify-center gap-2">
-                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                    <div className="w-5 h-5 border-4 border-black border-t-transparent rounded-full animate-spin" />
                                     Processing...
                                 </span>
                             ) : hasInsufficientBalance ? (
@@ -590,9 +572,9 @@ export default function TempoSwapPage() {
                 </div>
 
                 {/* Info Card */}
-                <div className="mt-6 p-4 bg-white/5 backdrop-blur-xl rounded-xl border border-white/10">
-                    <h3 className="font-medium mb-2 text-sm">About Tempo Stablecoin Swaps</h3>
-                    <ul className="text-white/50 text-sm space-y-1">
+                <div className="mt-6 card-block !p-4 !shadow-none bg-blue-50 !border-2">
+                    <h3 className="font-display mb-2 text-sm text-blue-800">About Tempo Stablecoin Swaps</h3>
+                    <ul className="text-gray-600 text-sm font-mono space-y-1">
                         <li>• All Tempo stablecoins maintain 1:1 USD peg</li>
                         <li>• Swaps have minimal fees (~0.03%)</li>
                         <li>• No native gas needed - fees paid in stablecoins</li>
@@ -602,7 +584,7 @@ export default function TempoSwapPage() {
             </div>
 
             {/* Toast Container */}
-            <TxToastContainer toasts={toasts} onDismiss={hide} />
+            <TxToastContainer toasts={toasts} onClose={hide} />
         </main>
     );
 }

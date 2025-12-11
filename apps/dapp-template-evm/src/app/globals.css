@@ -2,75 +2,208 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Import Web3 UI component styles */
-@import '@hst/ui-web3/styles.css';
+@layer base {
 
-:root {
-    --foreground: #ffffff;
-    --background-start: #0a0a1a;
-    --background-end: #1a1a2e;
+    /* FORCE MINECRAFT STYLE GLOBALLY */
+    *,
+    *::before,
+    *::after {
+        border-radius: 0px !important;
+        /* No rounded corners anywhere */
+    }
+
+    body {
+        @apply bg-background-light dark:bg-background-dark;
+        font-family: 'Space Mono', monospace;
+    }
+
+    /* Override default focus rings for a blocky look */
+    *:focus-visible {
+        outline: 2px solid #000;
+        outline-offset: 2px;
+    }
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+/* ============================================
+   MINECRAFT-STYLE THEME - TempoPay
+   ============================================ */
 
-html,
-body {
-    min-height: 100vh;
-    font-family: 'Inter', system-ui, sans-serif;
-}
-
-body {
-    color: var(--foreground);
-    background: linear-gradient(180deg, var(--background-start), var(--background-end));
-}
-
-/* Custom scrollbar */
+/* Scrollbar - Pixel style */
 ::-webkit-scrollbar {
-    width: 8px;
+    width: 16px;
+    height: 16px;
+    background: #0f172a;
 }
 
 ::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
+    background: #1e293b;
+    border-left: 2px solid #000;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
+    background: #10b981;
+    border: 3px solid #0f172a;
+    /* Creates the pixel block look */
+    box-shadow: inset 2px 2px 0px rgba(255, 255, 255, 0.4), inset -2px -2px 0px rgba(0, 0, 0, 0.4);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: #34d399;
 }
 
-/* Glass effect utility class */
-.glass {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+::-webkit-scrollbar-corner {
+    background: #0f172a;
 }
 
-/* Card component */
+
+/* Base styles */
+body {
+    font-family: 'Space Mono', monospace;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+/* Material Icons support */
+.material-icons {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Pixel decorations */
+.pixel-decoration {
+    position: absolute;
+    pointer-events: none;
+    opacity: 0.2;
+}
+
+/* Block buttons - Minecraft 3D effect */
+.btn-block {
+    @apply px-8 py-4 border-4 border-black;
+    box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+}
+
+.btn-block:hover {
+    box-shadow: none;
+    transform: translate(1px, 1px);
+}
+
+.btn-block:active {
+    transform: translateY(1px);
+    box-shadow: none;
+}
+
+.btn-block-primary {
+    @apply bg-primary;
+}
+
+.btn-block-secondary {
+    @apply bg-white border-gray-300;
+}
+
+/* Block card - Minecraft window style */
+.card-block {
+    @apply bg-white border-4 border-black;
+    box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+}
+
+.dark .card-block {
+    @apply bg-gray-800 border-gray-500;
+}
+
+/* Window title bar */
+.window-titlebar {
+    @apply bg-gray-100 border-b-4 border-black p-4 flex justify-between items-center;
+}
+
+.dark .window-titlebar {
+    @apply bg-gray-900 border-gray-500;
+}
+
+.window-controls {
+    @apply flex gap-2;
+}
+
+.window-btn {
+    @apply w-3 h-3 border border-black;
+}
+
+/* Action tiles */
+.action-tile {
+    @apply flex flex-col items-center justify-center p-6;
+    @apply bg-gray-50 border-2 border-dashed border-gray-300;
+    @apply transition-all;
+}
+
+.action-tile:hover {
+    @apply border-primary bg-green-50 border-solid;
+}
+
+.dark .action-tile {
+    @apply bg-gray-800 border-gray-600;
+}
+
+.dark .action-tile:hover {
+    @apply bg-green-900/20;
+}
+
+/* Badge/label styles */
+.badge-pixel {
+    @apply inline-flex items-center gap-2;
+    @apply px-3 py-1 border-2 border-primary;
+    @apply bg-green-100 text-primary font-mono text-xs font-bold uppercase tracking-widest;
+}
+
+.dark .badge-pixel {
+    @apply bg-green-900/30;
+}
+
+/* Navigation link */
+.nav-link {
+    @apply font-mono text-sm font-bold uppercase;
+    @apply transition-all;
+}
+
+.nav-link:hover {
+    @apply text-primary underline decoration-4 underline-offset-4 decoration-primary;
+}
+
+/* Legacy card class (compatibility) */
 .card {
-    @apply rounded-xl p-6 glass;
+    @apply bg-white border-4 border-black p-6;
+    box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
 }
 
-/* Button variants */
-.btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 font-medium transition-all duration-200;
+.dark .card {
+    @apply bg-gray-800 border-gray-500;
 }
 
-.btn-primary {
-    @apply bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600 hover:shadow-lg hover:shadow-blue-500/25;
+/* Text utilities */
+.text-pixel-lg {
+    font-family: 'VT323', monospace;
+    font-size: 3rem;
+    line-height: 1;
+    letter-spacing: -0.025em;
 }
 
-.btn-secondary {
-    @apply bg-white/10 text-white hover:bg-white/20;
+@media (min-width: 768px) {
+    .text-pixel-lg {
+        font-size: 3.75rem;
+    }
 }
 
-.btn-ghost {
-    @apply text-white/70 hover:text-white hover:bg-white/10;
+/* Selection colors */
+::selection {
+    background-color: #10b981;
+    color: black;
 }

@@ -21,13 +21,14 @@
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { useAccount, useChainId, useSwitchChain, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount, useChainId, useSwitchChain, useWriteContract } from 'wagmi';
 import { parseUnits, isAddress, type Address, type Hex } from 'viem';
 import { TOKENS, CHAIN_IDS, tip20Abi, type TokenInfo } from '@hst/abis';
-import { TokenInput, ConnectButton, ChainSelector, TxToastContainer, useTxToast, MemoInputBytes32 } from '@hst/ui-web3';
+import { TokenInput, ConnectButton, TxToastContainer, useTxToast, MemoInputBytes32 } from '@hst/ui-web3';
 import { useTokenBalance, formatBalance, type EncodedMemo } from '@hst/hooks-web3';
-import { chains, getExplorerUrl } from '@hst/web3-config';
+import { getExplorerUrl } from '@hst/web3-config';
 import { isSponsorEnabled, getTempoSponsorUrl, DEFAULT_TEMPO_SPONSOR_URL } from '@/lib/tempo';
+import { MinecraftNavbar } from '../components/MinecraftNavbar';
 
 // Tempo testnet chain ID
 const TEMPO_CHAIN_ID = CHAIN_IDS.TEMPO_TESTNET;
@@ -48,7 +49,7 @@ export default function TempoSponsorPage() {
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
                     <div className="animate-spin w-8 h-8 border-2 border-white/20 border-t-cyan-400 rounded-full mx-auto mb-4" />
-                    <p className="text-white/50">Loading...</p>
+                    <p className="text-aqua-text/60">Loading...</p>
                 </div>
             </div>
         );
@@ -64,7 +65,7 @@ function TempoSponsorContent() {
     const chainId = useChainId();
     const { switchChainAsync, isPending: isSwitchingChain } = useSwitchChain();
     const { toasts, show, update, hide } = useTxToast();
-    
+
     // Use wagmi's writeContract - will use user's wallet to sign
     const { writeContractAsync, isPending: isWritePending } = useWriteContract();
 
@@ -216,8 +217,8 @@ function TempoSponsorContent() {
     // Validation
     const isValidRecipient = recipientAddress && isAddress(recipientAddress);
     const canSubmit = isConnected && isOnTempo && sponsorEnabled &&
-                      isValidRecipient && parsedAmount > 0n && !hasInsufficientBalance &&
-                      !isWritePending && status !== 'signing' && status !== 'pending' && status !== 'preparing';
+        isValidRecipient && parsedAmount > 0n && !hasInsufficientBalance &&
+        !isWritePending && status !== 'signing' && status !== 'pending' && status !== 'preparing';
 
     // Sponsorship unavailable
     if (!sponsorEnabled) {
@@ -226,7 +227,7 @@ function TempoSponsorContent() {
                 <div className="text-center max-w-md">
                     <div className="text-6xl mb-4">💸</div>
                     <h1 className="text-2xl font-bold mb-2">Sponsorship Unavailable</h1>
-                    <p className="text-white/50 mb-4">
+                    <p className="text-aqua-text/60 mb-4">
                         Gas sponsorship is currently disabled. Set <code className="text-amber-400">NEXT_PUBLIC_TEMPO_SPONSOR_ENABLED</code> to enable.
                     </p>
                     <p className="text-white/30 text-sm mb-6">
@@ -241,32 +242,9 @@ function TempoSponsorContent() {
     }
 
     return (
-        <div className="min-h-screen">
-            {/* Header */}
-            <header className="sticky top-0 z-50 glass">
-                <div className="container mx-auto flex items-center justify-between px-4 py-4">
-                    <div className="flex items-center gap-8">
-                        <Link href="/" className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                            dApp Template
-                        </Link>
-                        <nav className="hidden md:flex items-center gap-6">
-                            <Link href="/" className="text-white/70 hover:text-white transition-colors">
-                                Dashboard
-                            </Link>
-                            <Link href="/tempo-pay" className="text-white/70 hover:text-white transition-colors">
-                                Tempo Pay
-                            </Link>
-                            <Link href="/tempo-sponsor" className="text-cyan-400 font-medium">
-                                Sponsored
-                            </Link>
-                        </nav>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <ChainSelector supportedChains={[chains.tempoTestnet]} />
-                        <ConnectButton showBalance={false} />
-                    </div>
-                </div>
-            </header>
+        <div className="min-h-screen bg-background-light dark:bg-background-dark">
+            {/* Minecraft-style Navbar */}
+            <MinecraftNavbar activePage="Sponsor" />
 
             {/* Main Content */}
             <main className="container mx-auto px-4 py-8">
@@ -274,30 +252,30 @@ function TempoSponsorContent() {
                     {/* Header Section */}
                     <div className="mb-8">
                         <div className="flex items-center gap-3 mb-2">
-                            <div className="w-10 h-10 rounded-full bg-cyan-500/20 flex items-center justify-center">
-                                <span className="text-cyan-400 text-xl">🎁</span>
+                            <div className="w-10 h-10 bg-primary border-4 border-black flex items-center justify-center">
+                                <span className="material-icons text-black">card_giftcard</span>
                             </div>
-                            <h1 className="text-3xl font-bold">Sponsored Payments</h1>
+                            <h1 className="text-3xl font-display text-gray-900 dark:text-white">Sponsored Payments</h1>
                         </div>
-                        <p className="text-white/50">
+                        <p className="text-gray-600 dark:text-gray-400 font-mono">
                             Send gas-free stablecoin payments - fees paid by sponsor
                         </p>
                     </div>
 
                     {/* Network Notice */}
                     {isConnected && !isOnTempo && (
-                        <div className="mb-6 p-4 rounded-lg bg-amber-500/10 border border-amber-500/30">
+                        <div className="mb-6 p-4 border-4 border-amber-500 bg-amber-50 dark:bg-amber-900/20 shadow-block">
                             <div className="flex items-start gap-3">
-                                <div className="text-amber-400 text-xl">⚠️</div>
+                                <div className="text-amber-500 text-2xl">⚠️</div>
                                 <div className="flex-1">
-                                    <h3 className="text-amber-400 font-medium mb-1">Wrong Network</h3>
-                                    <p className="text-white/70 text-sm mb-3">
+                                    <h3 className="text-amber-700 dark:text-amber-300 font-display mb-1">Wrong Network</h3>
+                                    <p className="text-amber-700/70 dark:text-amber-400 text-sm mb-3 font-mono">
                                         Please switch to Tempo Testnet.
                                     </p>
                                     <button
                                         onClick={handleSwitchToTempo}
                                         disabled={isSwitchingChain}
-                                        className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-black font-medium rounded-lg transition-colors disabled:opacity-50"
+                                        className="px-4 py-2 bg-amber-500 text-black border-2 border-black font-display uppercase hover:bg-amber-400 transition-colors disabled:opacity-50"
                                     >
                                         {isSwitchingChain ? 'Switching...' : 'Switch to Tempo'}
                                     </button>
@@ -307,33 +285,32 @@ function TempoSponsorContent() {
                     )}
 
                     {/* Info Card */}
-                    <div className="mb-6 p-4 rounded-lg bg-amber-500/10 border border-amber-500/30">
-                        <h3 className="text-amber-400 font-medium mb-2">⚠️ Sponsorship Mode</h3>
-                        <ul className="text-white/70 text-sm space-y-1">
-                            <li>• <span className="text-amber-400">Current:</span> Regular transfer (you pay fee from your TIP-20 balance)</li>
-                            <li>• <span className="text-white/50">True sponsorship:</span> Requires wagmi config with <code className="text-cyan-400/70">withFeePayer</code> transport</li>
+                    <div className="mb-6 card-block bg-amber-50 dark:bg-amber-900/20 !border-2 !p-4 !shadow-none">
+                        <h3 className="text-amber-700 dark:text-amber-300 font-display mb-2">⚠️ Sponsorship Mode</h3>
+                        <ul className="text-amber-700/70 dark:text-amber-400 text-sm space-y-1 font-mono">
+                            <li>• <span className="text-amber-700 dark:text-amber-300">Current:</span> Regular transfer (you pay fee from your TIP-20 balance)</li>
+                            <li>• <span className="text-gray-500">True sponsorship:</span> Requires wagmi config with <code className="bg-gray-200 dark:bg-gray-700 px-1">withFeePayer</code> transport</li>
                             <li>• Memo/invoice ID is preserved on-chain</li>
                         </ul>
-                        <p className="text-white/30 text-xs mt-3">
-                            Sponsor URL: <code className="text-cyan-400/70">{sponsorUrl || DEFAULT_TEMPO_SPONSOR_URL}</code>
+                        <p className="text-gray-500 text-xs mt-3 font-mono">
+                            Sponsor URL: <code className="bg-gray-100 dark:bg-gray-800 px-1">{sponsorUrl || DEFAULT_TEMPO_SPONSOR_URL}</code>
                         </p>
                     </div>
 
                     {/* Payment Form */}
-                    <div className="card">
+                    <div className="card-block p-6">
                         {/* Token Selection */}
                         <div className="mb-4">
-                            <label className="block text-sm text-white/50 mb-2">TIP-20 Stablecoin</label>
+                            <label className="block text-sm font-display mb-2 text-gray-700 dark:text-gray-300">TIP-20 Stablecoin</label>
                             <div className="flex flex-wrap gap-2">
                                 {tokenList.map((token) => (
                                     <button
                                         key={token.address}
                                         onClick={() => setSelectedToken(token)}
-                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                                            selectedToken?.address === token.address
-                                                ? 'bg-cyan-500 text-white'
-                                                : 'bg-white/10 hover:bg-white/20'
-                                        }`}
+                                        className={`px-4 py-2 border-2 border-black text-sm font-display uppercase transition-all ${selectedToken?.address === token.address
+                                            ? 'bg-primary text-black shadow-block'
+                                            : 'bg-white hover:bg-gray-50 text-gray-500'
+                                            }`}
                                     >
                                         {token.symbol}
                                     </button>
@@ -355,16 +332,16 @@ function TempoSponsorContent() {
 
                         {/* Recipient Address */}
                         <div className="mb-4">
-                            <label className="block text-sm text-white/50 mb-2">Recipient Address</label>
+                            <label className="block text-sm font-display mb-2 text-gray-700 dark:text-gray-300">Recipient Address</label>
                             <input
                                 type="text"
                                 value={recipientAddress}
                                 onChange={(e) => setRecipientAddress(e.target.value)}
                                 placeholder="0x..."
-                                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-cyan-500 font-mono text-sm"
+                                className="w-full px-4 py-3 bg-white border-2 border-black focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] font-mono text-sm text-black placeholder:text-gray-400"
                             />
                             {recipientAddress && !isValidRecipient && (
-                                <p className="text-red-400 text-sm mt-1">Invalid address</p>
+                                <p className="text-red-500 text-sm mt-1 font-mono">Invalid address</p>
                             )}
                         </div>
 
@@ -388,7 +365,7 @@ function TempoSponsorContent() {
                             <button
                                 onClick={handleSwitchToTempo}
                                 disabled={isSwitchingChain}
-                                className="btn btn-primary w-full bg-cyan-500 hover:bg-cyan-600"
+                                className="w-full py-4 bg-amber-500 text-black border-2 border-black font-display uppercase hover:bg-amber-400 transition-colors disabled:opacity-50"
                             >
                                 {isSwitchingChain ? 'Switching...' : 'Switch to Tempo'}
                             </button>
@@ -396,12 +373,12 @@ function TempoSponsorContent() {
                             <button
                                 onClick={handleSponsoredPayment}
                                 disabled={!canSubmit}
-                                className="btn btn-primary w-full bg-cyan-500 hover:bg-cyan-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="btn-block w-full disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {status === 'preparing' ? 'Preparing...' :
-                                 status === 'signing' ? 'Sign in Wallet...' :
-                                 status === 'pending' ? 'Confirming...' :
-                                 `Send ${selectedToken?.symbol ?? ''} (Gas-Free)`}
+                                    status === 'signing' ? 'Sign in Wallet...' :
+                                        status === 'pending' ? 'Confirming...' :
+                                            `Send ${selectedToken?.symbol ?? ''} (Gas-Free)`}
                             </button>
                         )}
 
@@ -413,23 +390,23 @@ function TempoSponsorContent() {
 
                     {/* Success Receipt */}
                     {txHash && status === 'success' && (
-                        <div className="mt-6 card">
+                        <div className="mt-6 card-block bg-green-50 !border-2 !border-green-600 !p-6 !shadow-none">
                             <div className="flex items-center gap-2 mb-3">
-                                <span className="text-green-400 text-xl">✓</span>
-                                <h3 className="text-lg font-medium">Sponsored Payment Sent!</h3>
+                                <span className="material-icons text-green-600 text-xl">check_circle</span>
+                                <h3 className="text-lg font-display text-green-800">Sponsored Payment Sent!</h3>
                             </div>
-                            <div className="space-y-2 text-sm">
+                            <div className="space-y-2 text-sm text-green-900 font-mono">
                                 <div className="flex justify-between">
-                                    <span className="text-white/50">Status:</span>
-                                    <span className="text-green-400">Submitted (gas-free)</span>
+                                    <span className="text-green-700">Status:</span>
+                                    <span className="text-green-600 font-bold uppercase">Submitted (gas-free)</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-white/50">Tx Hash:</span>
+                                    <span className="text-green-700">Tx Hash:</span>
                                     <a
                                         href={getExplorerUrl(TEMPO_CHAIN_ID, 'tx', txHash)}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-cyan-400 hover:underline font-mono"
+                                        className="text-primary-dark hover:underline font-bold"
                                     >
                                         {txHash.slice(0, 10)}...{txHash.slice(-8)} ↗
                                     </a>
